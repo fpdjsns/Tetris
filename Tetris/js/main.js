@@ -1,11 +1,39 @@
 var blockType = [
-    { name: "I", color: "red" },
-    { name: "L", color: "green" },
-    { name: "J", color: "blue" },
-    { name: "T", color: "yellow" },
-    { name: "O", color: "skyblue" },
-    { name: "S", color: "gray" },
-    { name: "Z", color: "purple" }
+    {
+        name: "O",
+        color: "skyblue",
+        shape: [[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
+    },
+    {
+        name: "S",
+        color: "gray",
+        shape: [[0, 0, 0, 0], [0, 0, 1, 1], [0, 1, 1, 0], [0, 0, 0, 0]]
+    },
+    {
+        name: "Z",
+        color: "purple",
+        shape: [[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]]
+    },
+    {
+        name: "I",
+        color: "red",
+        shape: [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]
+    },
+    {
+        name: "T",
+        color: "yellow",
+        shape: [[0, 0, 1, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]]
+    },
+    {
+        name: "L",
+        color: "green",
+        shape: [[0, 0, 1, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+    },
+    {
+        name: "J",
+        color: "blue",
+        shape: [[0, 1, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+    }
 ];
 
 var nowBlock;
@@ -14,13 +42,15 @@ var nextBlockType = Math.floor(Math.random() * blockType.length);
 
 const BEGIN_X = 30;
 const BEGIN_Y = 30;
-const SPEED = 50;
+const SPEED = 10;
 const WIDTH = canvas.clientWidth;
 const HEIGHT = canvas.clientHeight;
 const CANVAS_LEFT = canvas.clientLeft;
 const CANVAS_RIGHT = canvas.clientLeft + WIDTH;
 const CANVAS_TOP = canvas.clientTop;
 const CANVAS_BOTTOM = canvas.clientTop + HEIGHT;
+const SMALL_BLOCK_SIZE = 20;
+const BIG_BLOCK_SIZE = SMALL_BLOCK_SIZE * 4;
 
 const WAIT_NEXTBLOCK_TIME = 500;
 
@@ -61,20 +91,28 @@ function Block(blockTypeIndex, x, y) {
     this.type = blockType[blockTypeIndex];
     this.x = x;
     this.y = y;
-    this.width = 50;
-    this.height = 70;
 
     this.drawBlock = function(nx, ny) {
-        ctx.clearRect(this.x, this.y, this.width, this.height);
-        if (nx < CANVAS_LEFT || nx + this.width > CANVAS_RIGHT) nx = this.x;
-        if (ny + this.height > CANVAS_BOTTOM) {
+        ctx.clearRect(this.x, this.y, BIG_BLOCK_SIZE, BIG_BLOCK_SIZE);
+        if (nx < CANVAS_LEFT || nx + BIG_BLOCK_SIZE > CANVAS_RIGHT) nx = this.x;
+        if (ny + BIG_BLOCK_SIZE > CANVAS_BOTTOM) {
             ny = this.y;
             setTimeout(drawNewBlock(), WAIT_NEXTBLOCK_TIME);
         }
 
         // Change colors just before drawing to avoid affecting the previous or next block color.
         ctx.fillStyle = this.type.color;
-        ctx.fillRect(nx, ny, this.width, this.height);
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 4; j++) {
+                if (this.type.shape[i][j] == 1)
+                    ctx.fillRect(
+                        nx + i * SMALL_BLOCK_SIZE,
+                        ny + j * SMALL_BLOCK_SIZE,
+                        SMALL_BLOCK_SIZE,
+                        SMALL_BLOCK_SIZE
+                    );
+            }
+        }
         console.log(nx + "," + ny);
         this.x = nx;
         this.y = ny;
