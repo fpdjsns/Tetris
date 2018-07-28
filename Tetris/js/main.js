@@ -55,15 +55,17 @@ const GAME_SCREEN_RIGHT = canvas.clientLeft + GAME_SCREEN_WIDTH;
 const GAME_SCREEN_TOP = canvas.clientTop;
 const GAME_SCREEN_BOTTOM = canvas.clientTop + GAME_SCREEN_HEIGHT;
 
-const WAIT_NEXTBLOCK_TIME = 500;
+const WAIT_NEXTBLOCK_TIME = 1000;
+
+const NOW_DELETE = -2;
 
 const BEGIN_X = GAME_SCREEN_LEFT + GAME_SCREEN_WIDTH_NUM / 2 - 4 / 2;
 const BEGIN_Y = GAME_SCREEN_TOP;
 const SPEED = 1000;
 
 var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
-    .fill(0)
-    .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(0));
+    .fill(-1)
+    .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
 
 if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
@@ -117,6 +119,82 @@ var drawNextBlock = function() {
     }
 };
 
+// sy ~ se row에서 지워질 수 있는 행 체크 & 지우기
+// TODO test
+var checkRowsAndErase = function(sy, ey) {
+    var isEraseAnything = false;
+    for (var i = sy; i <= ey; i++) {
+        if (canEraseRow(i)) {
+            eraseRow(i);
+            isEraseAnything = true;
+        }
+    }
+    if (isEraseAnything) {
+        rearrange();
+        console.log(gameScreenArray);
+    }
+};
+
+var canEraseRow = function(row) {
+    for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
+        if (gameScreenArray[row][j] == -1) {
+            return false;
+        }
+    }
+    return true;
+};
+var eraseRow = function(row) {
+    console.log("erase" + row);
+    for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
+        eraseOneBlock(row, j);
+        gameScreenArray[row][j] = NOW_DELETE;
+    }
+};
+
+var eraseOneBlock = function(x, y) {
+    ctx.clearRect(
+        y * SMALL_BLOCK_SIZE,
+        x * SMALL_BLOCK_SIZE,
+        SMALL_BLOCK_SIZE,
+        SMALL_BLOCK_SIZE
+    );
+    gameScreenArray[x][y] = -1;
+};
+
+var drawOneBlock = function(x, y, colorType) {
+    ctx.fillStyle = blockType[colorType].color;
+    ctx.fillRect(
+        y * SMALL_BLOCK_SIZE,
+        x * SMALL_BLOCK_SIZE,
+        SMALL_BLOCK_SIZE,
+        SMALL_BLOCK_SIZE
+    );
+    gameScreenArray[x][y] = colorType;
+};
+
+var rearrange = function() {
+    for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
+        // from bottom
+        var index = GAME_SCREEN_HEIGHT_NUM - 1;
+        var deleteBlockNum = 0;
+        for (var i = GAME_SCREEN_HEIGHT_NUM - 1; i >= 0; i--) {
+            if (gameScreenArray[i][j] == -1) continue;
+            if (gameScreenArray[i][j] == NOW_DELETE) {
+                gameScreenArray[i][j] = -1;
+                eraseOneBlock(i, j);
+                deleteBlockNum++;
+                index++;
+            } else {
+                var blockColor = gameScreenArray[i][j];
+                console.log(blockColor);
+                eraseOneBlock(i, j);
+                if (j == 0) console.log(index);
+                drawOneBlock(i + deleteBlockNum, j, blockColor);
+            }
+        }
+    }
+};
+
 var gameEnd = function() {
     alert("game over!");
 };
@@ -138,7 +216,8 @@ $(document).keydown(function(e) {
 });
 
 function Block(blockTypeIndex, x, y) {
-    this.type = blockType[blockTypeIndex];
+    this.typeIndex = blockTypeIndex;
+    this.type = blockType[this.typeIndex];
     this.x = x;
     this.y = y;
 
@@ -154,17 +233,26 @@ function Block(blockTypeIndex, x, y) {
     this.drawDown = function(nx, ny) {
         if (this.isBottom(nx, ny)) {
             console.log("bottom!");
-            nx = this.x;
-            console.log(this.x + "," + this.y);
+            // console.log(this.x + "," + this.y);
             for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
                 for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                     if (this.type.shape[j][i] == 1) {
-                        gameScreenArray[this.y + j][this.x + i] = 1;
+                        gameScreenArray[this.y + j][
+                            this.x + i
+                        ] = this.typeIndex;
                     }
                 }
             }
 
             console.log(gameScreenArray);
+            //한 줄 지울 수 있는지 체크
+            checkRowsAndErase(
+                this.y,
+                Math.min(
+                    GAME_SCREEN_HEIGHT_NUM - 1,
+                    this.y + SMALL_BLOCK_NUM - 1
+                )
+            );
             setTimeout(drawNewBlock(), WAIT_NEXTBLOCK_TIME);
         } else {
             this.eraseBeforeBlock();
@@ -203,7 +291,7 @@ function Block(blockTypeIndex, x, y) {
             }
         }
 
-        console.log(this.x + "," + this.y + " : " + x + "," + y);
+        // console.log(this.x + "," + this.y + " : " + x + "," + y);
         this.x = x;
         this.y = y;
     };
@@ -215,7 +303,7 @@ function Block(blockTypeIndex, x, y) {
                 var ny = y + j;
                 if (this.type.shape[j][i] == 0) continue;
                 if (nx < 0 || GAME_SCREEN_WIDTH_NUM <= nx) return true;
-                if (gameScreenArray[ny][nx] == 1) return true;
+                if (gameScreenArray[ny][nx] != -1) return true;
             }
         }
         return false;
@@ -229,7 +317,7 @@ function Block(blockTypeIndex, x, y) {
                 if (this.type.shape[j][i] == 0) continue;
 
                 if (GAME_SCREEN_HEIGHT_NUM <= ny) return true;
-                if (gameScreenArray[ny][nx] == 1) return true;
+                if (gameScreenArray[ny][nx] != -1) return true;
             }
         }
         return false;
