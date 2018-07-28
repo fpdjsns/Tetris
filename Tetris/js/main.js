@@ -32,12 +32,13 @@ var blockType = [
     {
         name: "J",
         color: "blue",
-        shape: [[0, 1, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        shape: [[1, 0, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
     }
 ];
 
 var nowBlock;
 var canvas = document.getElementById("game");
+var canvasNextBlock = document.getElementById("nextBlock");
 var nextBlockType = Math.floor(Math.random() * blockType.length);
 
 const SMALL_BLOCK_NUM = 4;
@@ -68,6 +69,10 @@ if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
     canvas.width = GAME_SCREEN_WIDTH;
     canvas.height = GAME_SCREEN_HEIGHT;
+
+    var ctxNextBlock = canvasNextBlock.getContext("2d");
+    canvasNextBlock.width = BIG_BLOCK_SIZE;
+    canvasNextBlock.height = BIG_BLOCK_SIZE;
 } else {
     console.log("browser not supported canvas");
 }
@@ -88,6 +93,28 @@ var drawNewBlock = function() {
     }
     nowBlock.drawDown(BEGIN_X, BEGIN_Y);
     nextBlockType = Math.floor(Math.random() * blockType.length);
+    drawNextBlock();
+};
+
+var drawNextBlock = function() {
+    var nextBlock = blockType[nextBlockType];
+    var x = 0;
+    var y = 0;
+    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
+        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+            if (nextBlock.shape[i][j] == 1) {
+                ctxNextBlock.fillStyle = nextBlock.color;
+            } else {
+                ctxNextBlock.fillStyle = "white";
+            }
+            ctxNextBlock.fillRect(
+                (x + j) * SMALL_BLOCK_SIZE,
+                (y + i) * SMALL_BLOCK_SIZE,
+                SMALL_BLOCK_SIZE,
+                SMALL_BLOCK_SIZE
+            );
+        }
+    }
 };
 
 var gameEnd = function() {
