@@ -175,7 +175,6 @@ var drawOneBlock = function(x, y, colorType) {
 var rearrange = function() {
     for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
         // from bottom
-        var index = GAME_SCREEN_HEIGHT_NUM - 1;
         var deleteBlockNum = 0;
         for (var i = GAME_SCREEN_HEIGHT_NUM - 1; i >= 0; i--) {
             if (gameScreenArray[i][j] == -1) continue;
@@ -183,12 +182,10 @@ var rearrange = function() {
                 gameScreenArray[i][j] = -1;
                 eraseOneBlock(i, j);
                 deleteBlockNum++;
-                index++;
             } else {
                 var blockColor = gameScreenArray[i][j];
                 console.log(blockColor);
                 eraseOneBlock(i, j);
-                if (j == 0) console.log(index);
                 drawOneBlock(i + deleteBlockNum, j, blockColor);
             }
         }
