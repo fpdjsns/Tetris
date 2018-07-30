@@ -87,6 +87,11 @@ const BEGIN_X = GAME_SCREEN_LEFT + GAME_SCREEN_WIDTH_NUM / 2 - 4 / 2;
 const BEGIN_Y = GAME_SCREEN_TOP;
 const SPEED = 1000;
 
+const NONE_DUPLICATED = 0;
+const LEFT_DUPLICATED = 1;
+const RIGHT_DUPLICATED = 2;
+const EITHER_DUPLICATED = 3;
+
 var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
@@ -245,7 +250,9 @@ function Block(blockTypeIndex, x, y) {
     this.y = y;
 
     this.drawLeftOrRight = function(nx, ny) {
-        if (this.isDuplicatedBlockOrOutOfGameScreen(nx, ny)) {
+        if (
+            this.isDuplicatedBlockOrOutOfGameScreen(nx, ny) != NONE_DUPLICATED
+        ) {
             console.log("duplicated!");
         } else {
             this.eraseBeforeBlock();
@@ -324,11 +331,24 @@ function Block(blockTypeIndex, x, y) {
                 var nx = x + i;
                 var ny = y + j;
                 if (this.shape[j][i] == 0) continue;
-                if (nx < 0 || GAME_SCREEN_WIDTH_NUM <= nx) return true;
-                if (gameScreenArray[ny][nx] != -1) return true;
+
+                // out of game screen
+                if (nx < 0) {
+                    console.log("LEFT DUPL");
+                    return LEFT_DUPLICATED;
+                }
+                if (GAME_SCREEN_WIDTH_NUM < nx) {
+                    console.log("RIGHT DUPL");
+                    return RIGHT_DUPLICATED;
+                }
+                // duplicated another block
+                if (gameScreenArray[ny][nx] != -1) {
+                    console.log("EITHER DUPL");
+                    return EITHER_DUPLICATED;
+                }
             }
         }
-        return false;
+        return NONE_DUPLICATED;
     };
 
     this.isBottom = function(x, y) {
@@ -349,6 +369,56 @@ function Block(blockTypeIndex, x, y) {
         this.eraseBeforeBlock();
         this.shapeIndex = (this.shapeIndex + 1) % this.type.shape.length;
         this.shape = this.type.shape[this.shapeIndex];
+        var checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(
+            this.x,
+            this.y
+        );
+        if (checkDuplicated != NONE_DUPLICATED) {
+            var moveIndex = 0;
+            if (
+                checkDuplicated == LEFT_DUPLICATED ||
+                checkDuplicated == EITHER_DUPLICATED
+            ) {
+                for (var i = 1; i < SMALL_BLOCK_NUM; i++) {
+                    if (
+                        this.isDuplicatedBlockOrOutOfGameScreen(
+                            this.x + i,
+                            this.y
+                        ) == NONE_DUPLICATED
+                    ) {
+                        moveIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (
+                checkDuplicated == RIGHT_DUPLICATED ||
+                checkDuplicated == EITHER_DUPLICATED
+            ) {
+                for (var i = 1; i < SMALL_BLOCK_NUM; i++) {
+                    if (
+                        this.isDuplicatedBlockOrOutOfGameScreen(
+                            this.x - i,
+                            this.y
+                        ) == NONE_DUPLICATED
+                    ) {
+                        moveIndex = -i;
+                        console.log(-moveIndex);
+                        break;
+                    }
+                }
+            }
+
+            // 움직여도 안되는 경우
+            if (moveIndex == 0) {
+                this.shapeIndex =
+                    (this.shapeIndex + this.type.shape.length - 1) %
+                    this.type.shape.length;
+                this.shape = this.type.shape[this.shapeIndex];
+            } else {
+                this.x += moveIndex;
+            }
+        }
         this.drawBlock(this.x, this.y);
     };
 }
