@@ -2,37 +2,61 @@ var blockType = [
     {
         name: "O",
         color: "skyblue",
-        shape: [[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
+        shape: [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]]
     },
     {
         name: "S",
         color: "gray",
-        shape: [[0, 0, 0, 0], [0, 0, 1, 1], [0, 1, 1, 0], [0, 0, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [0, 0, 1, 1], [0, 1, 1, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]]
+        ]
     },
     {
         name: "Z",
         color: "purple",
-        shape: [[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]],
+            [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]]
+        ]
     },
     {
         name: "I",
         color: "red",
-        shape: [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
+        ]
     },
     {
         name: "T",
         color: "yellow",
-        shape: [[0, 0, 1, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
+        ]
     },
     {
         name: "L",
         color: "green",
-        shape: [[0, 0, 1, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [0, 1, 1, 1], [0, 1, 0, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]],
+            [[0, 0, 0, 1], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+            [[0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
+        ]
     },
     {
         name: "J",
         color: "blue",
-        shape: [[1, 0, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        shape: [
+            [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]],
+            [[0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]],
+            [[0, 1, 0, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+            [[0, 0, 1, 0], [0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
+        ]
     }
 ];
 
@@ -104,7 +128,7 @@ var drawNextBlock = function() {
     var y = 0;
     for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
         for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-            if (nextBlock.shape[i][j] == 1) {
+            if (nextBlock.shape[0][i][j] == 1) {
                 ctxNextBlock.fillStyle = nextBlock.color;
             } else {
                 ctxNextBlock.fillStyle = "white";
@@ -131,7 +155,6 @@ var checkRowsAndErase = function(sy, ey) {
     }
     if (isEraseAnything) {
         rearrange();
-        console.log(gameScreenArray);
     }
 };
 
@@ -144,7 +167,6 @@ var canEraseRow = function(row) {
     return true;
 };
 var eraseRow = function(row) {
-    console.log("erase" + row);
     for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
         eraseOneBlock(row, j);
         gameScreenArray[row][j] = NOW_DELETE;
@@ -184,7 +206,6 @@ var rearrange = function() {
                 deleteBlockNum++;
             } else {
                 var blockColor = gameScreenArray[i][j];
-                console.log(blockColor);
                 eraseOneBlock(i, j);
                 drawOneBlock(i + deleteBlockNum, j, blockColor);
             }
@@ -203,6 +224,9 @@ $(document).keydown(function(e) {
     } else if (e.keyCode == 38) {
         //up
         // nowBlock.drawBlock(nowBlock.x, nowBlock.y-1);
+        //rotation
+        nowBlock.rotation();
+        nowBlock.drawBlock(nowBlock.x, nowBlock.y);
     } else if (e.keyCode == 39) {
         //right
         nowBlock.drawLeftOrRight(nowBlock.x + 1, nowBlock.y);
@@ -215,6 +239,8 @@ $(document).keydown(function(e) {
 function Block(blockTypeIndex, x, y) {
     this.typeIndex = blockTypeIndex;
     this.type = blockType[this.typeIndex];
+    this.shapeIndex = 0;
+    this.shape = this.type.shape[this.shapeIndex];
     this.x = x;
     this.y = y;
 
@@ -233,7 +259,7 @@ function Block(blockTypeIndex, x, y) {
             // console.log(this.x + "," + this.y);
             for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
                 for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-                    if (this.type.shape[j][i] == 1) {
+                    if (this.shape[j][i] == 1) {
                         gameScreenArray[this.y + j][
                             this.x + i
                         ] = this.typeIndex;
@@ -241,7 +267,6 @@ function Block(blockTypeIndex, x, y) {
                 }
             }
 
-            console.log(gameScreenArray);
             //한 줄 지울 수 있는지 체크
             checkRowsAndErase(
                 this.y,
@@ -260,7 +285,7 @@ function Block(blockTypeIndex, x, y) {
     this.eraseBeforeBlock = function() {
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-                if (this.type.shape[i][j] == 1) {
+                if (this.shape[i][j] == 1) {
                     ctx.clearRect(
                         (this.x + j) * SMALL_BLOCK_SIZE,
                         (this.y + i) * SMALL_BLOCK_SIZE,
@@ -277,7 +302,7 @@ function Block(blockTypeIndex, x, y) {
         ctx.fillStyle = this.type.color;
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-                if (this.type.shape[i][j] == 1) {
+                if (this.shape[i][j] == 1) {
                     ctx.fillRect(
                         (x + j) * SMALL_BLOCK_SIZE,
                         (y + i) * SMALL_BLOCK_SIZE,
@@ -298,7 +323,7 @@ function Block(blockTypeIndex, x, y) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 var nx = x + i;
                 var ny = y + j;
-                if (this.type.shape[j][i] == 0) continue;
+                if (this.shape[j][i] == 0) continue;
                 if (nx < 0 || GAME_SCREEN_WIDTH_NUM <= nx) return true;
                 if (gameScreenArray[ny][nx] != -1) return true;
             }
@@ -311,12 +336,19 @@ function Block(blockTypeIndex, x, y) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 var nx = x + i;
                 var ny = y + j;
-                if (this.type.shape[j][i] == 0) continue;
+                if (this.shape[j][i] == 0) continue;
 
                 if (GAME_SCREEN_HEIGHT_NUM <= ny) return true;
                 if (gameScreenArray[ny][nx] != -1) return true;
             }
         }
         return false;
+    };
+
+    this.rotation = function() {
+        this.eraseBeforeBlock();
+        this.shapeIndex = (this.shapeIndex + 1) % this.type.shape.length;
+        this.shape = this.type.shape[this.shapeIndex];
+        this.drawBlock(this.x, this.y);
     };
 }
