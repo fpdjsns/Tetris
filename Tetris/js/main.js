@@ -220,8 +220,36 @@ var rearrange = function() {
     }
 };
 
+var drawBelow = function(block) {
+    console.log("below");
+    var x = block.x;
+    var y = block.y;
+    block.eraseBeforeBlock();
+    while (!block.isBottom(x, y + 1)) {
+        y = y + 1;
+    }
+
+    block.drawBlock(x, y);
+    setBlockInGameScreen(block);
+    checkRowsAndErase(
+        y,
+        Math.min(GAME_SCREEN_HEIGHT_NUM - 1, y + SMALL_BLOCK_NUM - 1)
+    );
+    drawNewBlock();
+};
+
 var gameEnd = function() {
     alert("game over!");
+};
+
+var setBlockInGameScreen = function(block) {
+    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
+        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+            if (block.shape[j][i] == 1) {
+                gameScreenArray[block.y + j][block.x + i] = block.typeIndex;
+            }
+        }
+    }
 };
 
 $(document).keydown(function(e) {
@@ -240,6 +268,9 @@ $(document).keydown(function(e) {
     } else if (e.keyCode == 40) {
         //down
         nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
+    } else if (e.keyCode == 32) {
+        //spacebar
+        drawBelow(nowBlock);
     }
 });
 
@@ -264,17 +295,7 @@ function Block(blockTypeIndex, x, y) {
 
     this.drawDown = function(nx, ny) {
         if (this.isBottom(nx, ny)) {
-            console.log("bottom!");
-            // console.log(this.x + "," + this.y);
-            for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-                for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-                    if (this.shape[j][i] == 1) {
-                        gameScreenArray[this.y + j][
-                            this.x + i
-                        ] = this.typeIndex;
-                    }
-                }
-            }
+            setBlockInGameScreen(this);
 
             //한 줄 지울 수 있는지 체크
             checkRowsAndErase(
@@ -312,7 +333,6 @@ function Block(blockTypeIndex, x, y) {
             }
         }
 
-        // console.log(this.x + "," + this.y + " : " + x + "," + y);
         this.x = x;
         this.y = y;
     };
@@ -326,16 +346,13 @@ function Block(blockTypeIndex, x, y) {
 
                 // out of game screen
                 if (nx < 0) {
-                    console.log("LEFT DUPL");
                     return LEFT_DUPLICATED;
                 }
                 if (GAME_SCREEN_WIDTH_NUM < nx) {
-                    console.log("RIGHT DUPL");
                     return RIGHT_DUPLICATED;
                 }
                 // duplicated another block
                 if (gameScreenArray[ny][nx] != -1) {
-                    console.log("EITHER DUPL");
                     return EITHER_DUPLICATED;
                 }
             }
@@ -395,7 +412,6 @@ function Block(blockTypeIndex, x, y) {
                         ) == NONE_DUPLICATED
                     ) {
                         moveIndex = -i;
-                        console.log(-moveIndex);
                         break;
                     }
                 }
