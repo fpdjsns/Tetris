@@ -22,7 +22,7 @@ var blockType = [
     },
     {
         name: "I",
-        color: "red",
+        color: "darkred",
         shape: [
             [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
@@ -92,6 +92,8 @@ const LEFT_DUPLICATED = 1;
 const RIGHT_DUPLICATED = 2;
 const EITHER_DUPLICATED = 3;
 
+const BLOCK_GAP = 1;
+
 var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
@@ -139,10 +141,10 @@ var drawNextBlock = function() {
                 ctxNextBlock.fillStyle = "white";
             }
             ctxNextBlock.fillRect(
-                (x + j) * SMALL_BLOCK_SIZE,
-                (y + i) * SMALL_BLOCK_SIZE,
-                SMALL_BLOCK_SIZE,
-                SMALL_BLOCK_SIZE
+                (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP
             );
         }
     }
@@ -180,23 +182,21 @@ var eraseRow = function(row) {
 
 var eraseOneBlock = function(x, y) {
     ctx.clearRect(
-        y * SMALL_BLOCK_SIZE,
         x * SMALL_BLOCK_SIZE,
+        y * SMALL_BLOCK_SIZE,
         SMALL_BLOCK_SIZE,
         SMALL_BLOCK_SIZE
     );
-    gameScreenArray[x][y] = -1;
 };
 
 var drawOneBlock = function(x, y, colorType) {
     ctx.fillStyle = blockType[colorType].color;
     ctx.fillRect(
-        y * SMALL_BLOCK_SIZE,
-        x * SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE
+        x * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        y * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP
     );
-    gameScreenArray[x][y] = colorType;
 };
 
 var rearrange = function() {
@@ -207,12 +207,14 @@ var rearrange = function() {
             if (gameScreenArray[i][j] == -1) continue;
             if (gameScreenArray[i][j] == NOW_DELETE) {
                 gameScreenArray[i][j] = -1;
-                eraseOneBlock(i, j);
+                eraseOneBlock(j, i);
                 deleteBlockNum++;
             } else {
                 var blockColor = gameScreenArray[i][j];
-                eraseOneBlock(i, j);
-                drawOneBlock(i + deleteBlockNum, j, blockColor);
+                eraseOneBlock(j, i);
+                gameScreenArray[i][j] = -1;
+                drawOneBlock(j, i + deleteBlockNum, blockColor);
+                gameScreenArray[i + deleteBlockNum][j] = blockColor;
             }
         }
     }
@@ -293,12 +295,7 @@ function Block(blockTypeIndex, x, y) {
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 if (this.shape[i][j] == 1) {
-                    ctx.clearRect(
-                        (this.x + j) * SMALL_BLOCK_SIZE,
-                        (this.y + i) * SMALL_BLOCK_SIZE,
-                        SMALL_BLOCK_SIZE,
-                        SMALL_BLOCK_SIZE
-                    );
+                    eraseOneBlock(this.x + j, this.y + i);
                 }
             }
         }
@@ -310,12 +307,7 @@ function Block(blockTypeIndex, x, y) {
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 if (this.shape[i][j] == 1) {
-                    ctx.fillRect(
-                        (x + j) * SMALL_BLOCK_SIZE,
-                        (y + i) * SMALL_BLOCK_SIZE,
-                        SMALL_BLOCK_SIZE,
-                        SMALL_BLOCK_SIZE
-                    );
+                    drawOneBlock(x + j, y + i, this.typeIndex);
                 }
             }
         }
