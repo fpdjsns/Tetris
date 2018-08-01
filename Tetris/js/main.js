@@ -252,28 +252,6 @@ var setBlockInGameScreen = function(block) {
     }
 };
 
-$(document).keydown(function(e) {
-    if (e.keyCode == 37) {
-        //left
-        nowBlock.drawLeftOrRight(nowBlock.x - 1, nowBlock.y);
-    } else if (e.keyCode == 38) {
-        //up
-        // nowBlock.drawBlock(nowBlock.x, nowBlock.y-1);
-        //rotation
-        nowBlock.rotation();
-        nowBlock.drawBlock(nowBlock.x, nowBlock.y);
-    } else if (e.keyCode == 39) {
-        //right
-        nowBlock.drawLeftOrRight(nowBlock.x + 1, nowBlock.y);
-    } else if (e.keyCode == 40) {
-        //down
-        nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
-    } else if (e.keyCode == 32) {
-        //spacebar
-        drawBelow(nowBlock);
-    }
-});
-
 function Block(blockTypeIndex, x, y) {
     this.typeIndex = blockTypeIndex;
     this.type = blockType[this.typeIndex];
