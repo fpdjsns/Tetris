@@ -30,7 +30,7 @@ var blockType = [
     },
     {
         name: "T",
-        color: "yellow",
+        color: "#FFD300",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
@@ -94,14 +94,16 @@ const EITHER_DUPLICATED = 3;
 
 const BLOCK_GAP = 1;
 
+const LINE_COLOR = "black";
+
 var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
 
 if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
-    canvas.width = GAME_SCREEN_WIDTH;
-    canvas.height = GAME_SCREEN_HEIGHT;
+    canvas.width = GAME_SCREEN_WIDTH + BLOCK_GAP;
+    canvas.height = GAME_SCREEN_HEIGHT + BLOCK_GAP;
 
     var ctxNextBlock = canvasNextBlock.getContext("2d");
     canvasNextBlock.width = BIG_BLOCK_SIZE;
@@ -112,12 +114,33 @@ if (canvas.getContext) {
 
 $(window).load(function() {
     console.log("load");
+    drawWhiteLineOnBackground();
     drawNewBlock();
 });
 
 setInterval(function() {
     nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
 }, SPEED);
+
+var drawWhiteLineOnBackground = function() {
+    ctx.fillStyle = LINE_COLOR;
+    for (var i = 0; i <= GAME_SCREEN_WIDTH_NUM; i++) {
+        ctx.fillRect(
+            i * SMALL_BLOCK_SIZE,
+            0,
+            BLOCK_GAP,
+            GAME_SCREEN_HEIGHT
+        );
+    }
+    for (var i = 0; i <= GAME_SCREEN_HEIGHT_NUM; i++) {
+        ctx.fillRect(
+            0,
+            i * SMALL_BLOCK_SIZE,
+            GAME_SCREEN_WIDTH,
+            BLOCK_GAP
+        );
+    }
+}
 
 var drawNewBlock = function() {
     nowBlock = new Block(nextBlockType, BEGIN_X, BEGIN_Y);
@@ -182,10 +205,10 @@ var eraseRow = function(row) {
 
 var eraseOneBlock = function(x, y) {
     ctx.clearRect(
-        x * SMALL_BLOCK_SIZE,
-        y * SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE
+        x * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        y * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP
     );
 };
 
