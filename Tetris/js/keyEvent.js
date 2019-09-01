@@ -1,8 +1,51 @@
-const LEFT = 37;
-const UP = 38;
-const RIGHT = 39;
-const DOWN = 40;
-const SPACEBAR = 32;
+// PC인 경우 상하좌우, 스페이스 keyCode
+const PC_BUTTON = {
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+    SPACEBAR: 32
+}
+
+// MOBILE인 경우 상하좌우, 스페이스 keyCode
+const MOBILE_BUTTON = {
+    LEFT: -1,
+    UP: -1,
+    RIGHT: -1,
+    DOWN: -1,
+    SPACEBAR: -1
+}
+
+// mobile인지
+const isMobile = (function() {
+    var userAgent = navigator.userAgent;
+    
+    var isMobile = false;
+    if (userAgent.indexOf("iPhone") > 0 || userAgent.indexOf("iPot") > 0 || userAgent.indexOf("iPad") > 0) {
+        console.log("iPhone or iPot or iPad");
+        isMobile = true; 
+    } else if (userAgent.indexOf("Android") > 0) {
+        console.log("Android");
+        isMobile = true;
+    } else {
+        console.log("PC");
+    }
+
+    return isMobile;
+})();
+
+// button 정보 세팅
+const keyCode = {
+    ...(isMobile ? MOBILE_BUTTON : PC_BUTTON)
+};
+
+(function() {
+    if(isMobile) { // mobile인 경우
+        // 300% 확대
+        document.body.style.zoom = "300%";
+    }
+})();
+
 
 var arrow_up = $(".fa-arrow-up");
 var arrow_down = $(".fa-arrow-down");
@@ -57,19 +100,19 @@ var spacebarKeyUp = function() {
 // TODO 함수나 변수 배열에 정리하면 switch 안쓰고 더 깔끔하게 할 수 있을 듯.
 $(document).keydown(function(e) {
     switch (e.keyCode) {
-        case LEFT:
+        case keyCode.LEFT:
             leftKeyDown();
             break;
-        case UP:
+        case keyCode.UP:
             upKeyDown();
             break;
-        case RIGHT:
+        case keyCode.RIGHT:
             rightKeyDown();
             break;
-        case DOWN:
+        case keyCode.DOWN:
             downKeyDown();
             break;
-        case SPACEBAR:
+        case keyCode.SPACEBAR:
             spacebarKeyDown();
             break;
         default:
@@ -79,19 +122,19 @@ $(document).keydown(function(e) {
 
 $(document).keyup(function(e) {
     switch (e.keyCode) {
-        case LEFT:
+        case keyCode.LEFT:
             leftKeyUp();
             break;
-        case UP:
+        case keyCode.UP:
             upKeyUp();
             break;
-        case RIGHT:
+        case keyCode.RIGHT:
             rightKeyUp();
             break;
-        case DOWN:
+        case keyCode.DOWN:
             downKeyUp();
             break;
-        case SPACEBAR:
+        case keyCode.SPACEBAR:
             spacebarKeyUp();
             break;
         default:
