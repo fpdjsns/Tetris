@@ -4,7 +4,8 @@ const PC_BUTTON = {
     UP: 38,
     RIGHT: 39,
     DOWN: 40,
-    SPACEBAR: 32
+    SPACEBAR: 32,
+    CTRL: 17
 }
 
 // MOBILE인 경우 상하좌우, 스페이스 keyCode
@@ -13,7 +14,8 @@ const MOBILE_BUTTON = {
     UP: -1,
     RIGHT: -1,
     DOWN: -1,
-    SPACEBAR: -1
+    SPACEBAR: -1,
+    CTRL: -1
 }
 
 // mobile인지
@@ -81,6 +83,10 @@ var spacebarKeyDown = function() {
     drawBelow(nowBlock);
 };
 
+const keepOrLoadBlockKey = function() {
+    keepOrLoadBlock();
+};
+
 var leftKeyUp = function() {
     arrow_left.removeClass("click");
 };
@@ -114,6 +120,9 @@ $(document).keydown(function(e) {
             break;
         case keyCode.SPACEBAR:
             spacebarKeyDown();
+            break;
+        case keyCode.CTRL:
+            keepOrLoadBlockKey();
             break;
         default:
             break;

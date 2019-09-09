@@ -1,35 +1,35 @@
-var blockType = [
-    {
-        name: "O",
+const blockType = new Map([
+    ['O', {
+        name: 'O',
         color: "skyblue",
         shape: [[[0, 0, 0, 0], [0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]]
-    },
-    {
-        name: "S",
+    }],
+    ['S', {
+        name: 'S',
         color: "gray",
         shape: [
             [[0, 0, 0, 0], [0, 0, 1, 1], [0, 1, 1, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]]
         ]
-    },
-    {
-        name: "Z",
+    }],
+    ['Z', {
+        name: 'Z',
         color: "purple",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]],
             [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]]
         ]
-    },
-    {
-        name: "I",
+    }],
+    ['I', {
+        name: 'I',
         color: "darkred",
         shape: [
             [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]]
         ]
-    },
-    {
-        name: "T",
+    }],
+    ['T', {
+        name: 'T',
         color: "#FFD300",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
@@ -37,9 +37,9 @@ var blockType = [
             [[0, 0, 1, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
         ]
-    },
-    {
-        name: "L",
+    }],
+    ['L', {
+        name: 'L',
         color: "green",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 1], [0, 1, 0, 0], [0, 0, 0, 0]],
@@ -47,9 +47,9 @@ var blockType = [
             [[0, 0, 0, 1], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
             [[0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
         ]
-    },
-    {
-        name: "J",
+    }],
+    ['J', {
+        name: 'J',
         color: "blue",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]],
@@ -57,13 +57,17 @@ var blockType = [
             [[0, 1, 0, 0], [0, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]]
         ]
-    }
-];
+    }]
+]);
 
-var nowBlock;
+var blockTypeArray = Array.from(blockType.keys());
+
+var nowBlock; // Block
+var nextBlockType; // blockType
+var keepBlockType; // blockType
+
 var canvas = document.getElementById("game");
 var canvasNextBlock = document.getElementById("nextBlock");
-var nextBlockType = Math.floor(Math.random() * blockType.length);
 
 const SMALL_BLOCK_NUM = 4;
 const SMALL_BLOCK_SIZE = 20;
@@ -114,6 +118,7 @@ if (canvas.getContext) {
 
 $(window).load(function() {
     console.log("load");
+    setNextRandomBlockType();
     drawWhiteLineOnBackground();
     drawNewBlock();
 });
@@ -148,12 +153,12 @@ var drawNewBlock = function() {
         gameEnd();
     }
     nowBlock.drawDown(BEGIN_X, BEGIN_Y);
-    nextBlockType = Math.floor(Math.random() * blockType.length);
+    setNextRandomBlockType();
     drawNextBlock();
 };
 
 var drawNextBlock = function() {
-    var nextBlock = blockType[nextBlockType];
+    var nextBlock = nextBlockType;
     var x = 0;
     var y = 0;
     for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
@@ -212,8 +217,8 @@ var eraseOneBlock = function(x, y) {
     );
 };
 
-var drawOneBlock = function(x, y, colorType) {
-    ctx.fillStyle = blockType[colorType].color;
+var drawOneBlock = function(x, y, color) {
+    ctx.fillStyle = color;
     ctx.fillRect(
         x * SMALL_BLOCK_SIZE + BLOCK_GAP,
         y * SMALL_BLOCK_SIZE + BLOCK_GAP,
@@ -233,13 +238,14 @@ var rearrange = function() {
                 eraseOneBlock(j, i);
                 deleteBlockNum++;
             } else {
-                var blockColor = gameScreenArray[i][j];
+                var key = gameScreenArray[i][j];
                 eraseOneBlock(j, i);
                 gameScreenArray[i][j] = -1;
-                drawOneBlock(j, i + deleteBlockNum, blockColor);
-                gameScreenArray[i + deleteBlockNum][j] = blockColor;
+                drawOneBlock(j, i + deleteBlockNum, getBlockTypeByKey(key).color);
+                gameScreenArray[i + deleteBlockNum][j] = key;
             }
         }
+
     }
 };
 
@@ -269,19 +275,67 @@ var setBlockInGameScreen = function(block) {
     for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
         for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
             if (block.shape[j][i] == 1) {
-                gameScreenArray[block.y + j][block.x + i] = block.typeIndex;
+                gameScreenArray[block.y + j][block.x + i] = block.type.name;
             }
         }
     }
 };
 
-function Block(blockTypeIndex, x, y) {
-    this.typeIndex = blockTypeIndex;
-    this.type = blockType[this.typeIndex];
+const keepOrLoadBlock = function() {
+    // #1
+    if(nowBlock.isLoaded) return false;
+
+    nowBlock.eraseBeforeBlock();
+    const willKeepType = nowBlock.type;
+    // #2
+    if(keepBlockType) {
+        nowBlock = new Block(keepBlockType, BEGIN_X, BEGIN_Y);
+        nowBlock.isLoaded = true;
+    }
+    else { // #3
+        nowBlock = new Block(nextBlockType, BEGIN_X, BEGIN_Y);
+        setNextRandomBlockType();
+    }
+
+    nowBlock.drawDown(BEGIN_X, BEGIN_Y);
+    keepBlockType = willKeepType;
+    if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
+        gameEnd();
+    }
+    drawNextBlock();
+
+    return true;
+}
+
+let getBlockTypeByKey = function(blockKey) {
+    return blockType.get(blockKey);
+}
+
+let getBlockTypeByIndex = function(blockIndex) {
+    return getBlockTypeByKey(blockTypeArray[blockIndex]);
+}
+
+let getRandomBlockType = function() {
+    return getBlockTypeByIndex(Math.floor(Math.random() * blockType.size));
+}
+
+let setNextRandomBlockType = function() {
+    nextBlockType = getRandomBlockType();
+}
+
+/**
+ * 
+ * @param {*} blockType blockType 
+ * @param {*} x block의 x 좌표
+ * @param {*} y block의 y 좌표
+ */
+function Block(blockType, x, y) {
+    this.type = blockType;
     this.shapeIndex = 0;
     this.shape = this.type.shape[this.shapeIndex];
     this.x = x;
     this.y = y;
+    this.isLoaded = false;
 
     this.drawLeftOrRight = function(nx, ny) {
         if (
@@ -329,7 +383,7 @@ function Block(blockTypeIndex, x, y) {
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 if (this.shape[i][j] == 1) {
-                    drawOneBlock(x + j, y + i, this.typeIndex);
+                    drawOneBlock(x + j, y + i, this.type);
                 }
             }
         }
