@@ -68,6 +68,7 @@ var keepBlockType; // blockType
 
 var canvas = document.getElementById("game");
 var canvasNextBlock = document.getElementById("nextBlock");
+var canvasKeepBlock = document.getElementById("keepBlock");
 
 const SMALL_BLOCK_NUM = 4;
 const SMALL_BLOCK_SIZE = 20;
@@ -112,6 +113,10 @@ if (canvas.getContext) {
     var ctxNextBlock = canvasNextBlock.getContext("2d");
     canvasNextBlock.width = BIG_BLOCK_SIZE;
     canvasNextBlock.height = BIG_BLOCK_SIZE;
+
+    var ctxKeepBlock = canvasKeepBlock.getContext("2d");
+    canvasKeepBlock.width = BIG_BLOCK_SIZE;
+    canvasKeepBlock.height = BIG_BLOCK_SIZE;
 } else {
     console.log("browser not supported canvas");
 }
@@ -169,6 +174,29 @@ var drawNextBlock = function() {
                 ctxNextBlock.fillStyle = "white";
             }
             ctxNextBlock.fillRect(
+                (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP
+            );
+        }
+    }
+};
+
+var drawKeepBlock = function() {
+    var keepBlock = keepBlockType;
+    if(!keepBlock) return;
+
+    var x = 0;
+    var y = 0;
+    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
+        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+            if (keepBlock.shape[0][i][j] == 1) {
+                ctxKeepBlock.fillStyle = keepBlock.color;
+            } else {
+                ctxKeepBlock.fillStyle = "white";
+            }
+            ctxKeepBlock.fillRect(
                 (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
                 (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
                 SMALL_BLOCK_SIZE - BLOCK_GAP,
@@ -303,6 +331,7 @@ const keepOrLoadBlock = function() {
         gameEnd();
     }
     drawNextBlock();
+    drawKeepBlock();
 
     return true;
 }
