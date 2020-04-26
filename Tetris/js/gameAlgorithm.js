@@ -78,14 +78,18 @@ var eraseOneBlock = function(x, y) {
     );
 };
 
-var drawOneBlock = function(x, y, colorType) {
-    ctx.fillStyle = blockType[colorType].color;
+var drawOneBlockWithColor = function(x, y, colorName) {
+    ctx.fillStyle = colorName;
     ctx.fillRect(
         x * SMALL_BLOCK_SIZE + BLOCK_GAP,
         y * SMALL_BLOCK_SIZE + BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP
     );
+}
+
+var drawOneBlock = function(x, y, colorType) {
+    drawOneBlockWithColor(x, y, blockType[colorType].color);
 };
 
 var rearrange = function() {

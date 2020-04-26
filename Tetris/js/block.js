@@ -10,8 +10,7 @@ function Block(blockTypeIndex, x, y) {
     this.drawPreview = function(nx, ny) {
         for (var k = 0; ; k++) {
             if(this.isBottom(nx, ny + k + 1)) {
-                ctx.fillStyle = "gray";
-                this.justDrawBlock(nx, ny + k);
+                this.justDrawBlock(nx, ny + k, 'gray');
                 return;
             }
         }
@@ -71,12 +70,15 @@ function Block(blockTypeIndex, x, y) {
         }
     }
 
-    this.justDrawBlock = function(x, y) {
-        ctx.fillStyle = this.type.color;
+    this.justDrawBlock = function(x, y, colorName) {
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 if (this.shape[i][j] == 1) {
-                    drawOneBlock(x + j, y + i, this.typeIndex);
+                    if(colorName == undefined){
+                        drawOneBlock(x + j, y + i, this.typeIndex);
+                    } else {
+                        drawOneBlockWithColor(x + j, y + i, colorName);
+                    }
                 }
             }
         }
