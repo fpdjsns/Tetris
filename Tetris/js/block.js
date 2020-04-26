@@ -7,6 +7,25 @@ function Block(blockTypeIndex, x, y) {
     this.x = x;
     this.y = y;
 
+    this.drawPreview = function(nx, ny) {
+        for (var k = 0; ; k++) {
+            if(this.isBottom(nx, ny + k + 1)) {
+                ctx.fillStyle = "gray";
+                this.justDrawBlock(nx, ny + k);
+                return;
+            }
+        }
+    }
+
+    this.erasePreview = function(x, y) {
+        for (var k = 0; ; k++) {
+            if(this.isBottom(x, y + k + 1)) {
+                this.eraseBlock(x, y + k);
+                return;
+            }
+        }
+    }
+
     this.drawLeftOrRight = function(nx, ny) {
         if (
             this.isDuplicatedBlockOrOutOfGameScreen(nx, ny) != NONE_DUPLICATED
@@ -38,17 +57,21 @@ function Block(blockTypeIndex, x, y) {
     };
 
     this.eraseBeforeBlock = function() {
+        this.erasePreview(this.x, this.y);
+        this.eraseBlock(this.x, this.y);
+    };
+
+    this.eraseBlock = function(x, y) {        
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
                 if (this.shape[i][j] == 1) {
-                    eraseOneBlock(this.x + j, this.y + i);
+                    eraseOneBlock(x + j, y + i);
                 }
             }
         }
-    };
+    }
 
-    this.drawBlock = function(x, y) {
-        // Change colors just before drawing to avoid affecting the previous or next block color.
+    this.justDrawBlock = function(x, y) {
         ctx.fillStyle = this.type.color;
         for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
             for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
@@ -57,6 +80,15 @@ function Block(blockTypeIndex, x, y) {
                 }
             }
         }
+    }
+
+    this.drawBlock = function(x, y) {
+        
+        // this.erasePreview(this.x, this.y);
+        this.drawPreview(x, y);
+
+        // Change colors just before drawing to avoid affecting the previous or next block color.
+        this.justDrawBlock(x, y);
 
         this.x = x;
         this.y = y;
@@ -77,7 +109,7 @@ function Block(blockTypeIndex, x, y) {
                     return RIGHT_DUPLICATED;
                 }
                 // duplicated another block
-                if (gameScreenArray[ny][nx] != -1) {
+                if (gameScreenArray[ny] != undefined && gameScreenArray[ny][nx] != -1) {
                     return EITHER_DUPLICATED;
                 }
             }

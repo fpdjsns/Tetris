@@ -4,7 +4,7 @@ $(window).load(function() {
 });
 
 var gameStart = function(){
-    alert("game start!");
+    //alert("game start!");
     drawNewBlock();
 }
 
