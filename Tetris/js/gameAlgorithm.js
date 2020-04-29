@@ -1,5 +1,6 @@
 var nowBlock;
 var nextBlockTypes = new NextBlock(NEXT_BLOCK_SIZE);
+var keepBlockType;
 var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
@@ -8,13 +9,23 @@ setInterval(function() {
     nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
 }, SPEED);
 
-var drawNewBlock = function() {
-    nowBlock = new Block(nextBlockTypes.pop(), BEGIN_X, BEGIN_Y);
-    if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
-        gameEnd();
+// blockType 있는 경우 블럭 생성 x. blockType을 제일 위부터 떨어뜨리기만 한다.
+// blockType 없는 경우 새로운 블럭 생성
+var drawNewBlock = function(blockType) {
+    if(blockType == undefined){
+        nowBlock = new Block(nextBlockTypes.pop(), BEGIN_X, BEGIN_Y);
+        if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
+            gameEnd();
+        }
+        nowBlock.drawDown(BEGIN_X, BEGIN_Y);
+        drawNextBlocks();
+    } else {
+        nowBlock = drawNewBlock(blockType, BEGIN_X, BEGIN_Y);
+        if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
+            gameEnd();
+        }
+        nowBlock.drawDown(BEGIN_X, BEGIN_Y);
     }
-    nowBlock.drawDown(BEGIN_X, BEGIN_Y);
-    drawNextBlocks();
 };
 
 var drawNextBlocks = function() {
@@ -74,10 +85,10 @@ var eraseRow = function(row) {
 
 var eraseOneBlock = function(x, y) {
     ctx.clearRect(
-        x * SMALL_BLOCK_SIZE,
-        y * SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE,
-        SMALL_BLOCK_SIZE
+        x * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        y * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP,
+        SMALL_BLOCK_SIZE - BLOCK_GAP
     );
 };
 
@@ -90,6 +101,27 @@ var drawOneBlockWithColor = function(x, y, colorName) {
         SMALL_BLOCK_SIZE - BLOCK_GAP
     );
 }
+
+var drawWhiteLineOnBackground = function() {
+    ctx.fillStyle = LINE_COLOR;
+    for (var i = 0; i <= GAME_SCREEN_WIDTH_NUM; i++) {
+        ctx.fillRect(
+            i * SMALL_BLOCK_SIZE,
+            0,
+            BLOCK_GAP,
+            GAME_SCREEN_HEIGHT
+        );
+    }
+    for (var i = 0; i <= GAME_SCREEN_HEIGHT_NUM; i++) {
+        ctx.fillRect(
+            0,
+            i * SMALL_BLOCK_SIZE,
+            GAME_SCREEN_WIDTH,
+            BLOCK_GAP
+        );
+    }
+}
+
 
 var drawOneBlock = function(x, y, colorType) {
     drawOneBlockWithColor(x, y, blockType[colorType].color);
@@ -143,3 +175,25 @@ var setBlockInGameScreen = function(block) {
         }
     }
 };
+
+const keepOrLoadBlock = function() {
+    // 이미 불러온 블럭인 경우. 다시 저장이 불가능하다.
+    if(nowBlock.isLoaded) return false;
+
+    nowBlock.eraseBeforeBlock();
+    const willKeepType = nowBlock.type; // 저장될 블럭 타입
+
+    // 불러올 블럭 타입이 있는 경우
+    if(keepBlockType) {
+        nowBlock = new Block(getBlockTypeIndex(keepBlockType), BEGIN_X, BEGIN_Y);
+        nowBlock.isLoaded = true;
+    }
+    else { // 불러올 블럭 타입이 없는 경우
+        drawNewBlock(); // 새로운 블럭 생성
+    }
+
+    // 현재 블럭 타입 저장
+    keepBlockType = willKeepType;
+
+    return true;
+}

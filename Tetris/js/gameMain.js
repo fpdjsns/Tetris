@@ -6,6 +6,7 @@ $(window).load(function() {
 var gameStart = function(){
     //alert("game start!");
     drawNewBlock();
+    drawWhiteLineOnBackground();
 }
 
 var gameEnd = function() {

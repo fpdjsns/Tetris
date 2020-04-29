@@ -1,4 +1,4 @@
-var blockType = [
+const blockType = [
     {
         name: "O",
         color: "skyblue",
@@ -30,7 +30,7 @@ var blockType = [
     },
     {
         name: "T",
-        color: "yellow",
+        color: "#FFD300",
         shape: [
             [[0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
             [[0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 1, 0], [0, 0, 0, 0]],
@@ -59,3 +59,12 @@ var blockType = [
         ]
     }
 ];
+
+const blockTypeMap = blockType.reduce((map, type, index, array) => {
+    map[type.name] = index;
+    return map;
+}, new Map());
+
+var getBlockTypeIndex = function(blockType) { 
+    return blockTypeMap[blockType.name];
+}
