@@ -1,9 +1,13 @@
 var canvas = document.getElementById("game");
 var canvasNextBlock = document.getElementById("nextBlock");
 
+const BLOCK_GAP = 1;
+
 const SMALL_BLOCK_NUM = 4;
 const SMALL_BLOCK_SIZE = 20;
 const BIG_BLOCK_SIZE = SMALL_BLOCK_SIZE * SMALL_BLOCK_NUM;
+
+const NEXT_BLOCK_SIZE = 3;
 
 const GAME_SCREEN_WIDTH_NUM = 10;
 const GAME_SCREEN_HEIGHT_NUM = 20;
@@ -27,5 +31,3 @@ const NONE_DUPLICATED = 0;
 const LEFT_DUPLICATED = 1;
 const RIGHT_DUPLICATED = 2;
 const EITHER_DUPLICATED = 3;
-
-const BLOCK_GAP = 1;

@@ -8,7 +8,7 @@ if (canvas.getContext) {
 
     var ctxNextBlock = canvasNextBlock.getContext("2d");
     canvasNextBlock.width = BIG_BLOCK_SIZE;
-    canvasNextBlock.height = BIG_BLOCK_SIZE;
+    canvasNextBlock.height = BIG_BLOCK_SIZE * NEXT_BLOCK_SIZE;
 } else {
     console.log("browser not supported canvas");
 }
