@@ -53,6 +53,29 @@ var drawNextBlocks = function() {
     }
 };
 
+var drawKeepBlock = function() {
+    var keepBlock = keepBlockType;
+    if(!keepBlock) return;
+
+    var x = 0;
+    var y = 0;
+    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
+        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+            if (keepBlock.shape[0][i][j] == 1) {
+                ctxKeepBlock.fillStyle = keepBlock.color;
+            } else {
+                ctxKeepBlock.fillStyle = "white";
+            }
+            ctxKeepBlock.fillRect(
+                (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP,
+                SMALL_BLOCK_SIZE - BLOCK_GAP
+            );
+        }
+    }
+};
+
 // sy ~ se row에서 지워질 수 있는 행 체크 & 지우기
 // TODO test
 var checkRowsAndErase = function(sy, ey) {
@@ -194,6 +217,7 @@ const keepOrLoadBlock = function() {
 
     // 현재 블럭 타입 저장
     keepBlockType = willKeepType;
-
+    drawKeepBlock();
+    
     return true;
 }

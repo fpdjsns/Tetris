@@ -1,5 +1,6 @@
 var canvas = document.getElementById("game");
 var canvasNextBlock = document.getElementById("nextBlock");
+var canvasKeepBlock = document.getElementById("keepBlock");
 
 if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
@@ -9,6 +10,10 @@ if (canvas.getContext) {
     var ctxNextBlock = canvasNextBlock.getContext("2d");
     canvasNextBlock.width = BIG_BLOCK_SIZE;
     canvasNextBlock.height = BIG_BLOCK_SIZE * NEXT_BLOCK_SIZE;
+    
+    var ctxKeepBlock = canvasKeepBlock.getContext("2d");
+    canvasKeepBlock.width = BIG_BLOCK_SIZE;
+    canvasKeepBlock.height = BIG_BLOCK_SIZE;
 } else {
     console.log("browser not supported canvas");
 }
