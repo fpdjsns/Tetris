@@ -5,7 +5,7 @@ var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
 
-setInterval(function() {
+var gameId = setInterval(function() {
     nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
 }, SPEED);
 
@@ -16,6 +16,7 @@ var drawNewBlock = function(blockType) {
         nowBlock = new Block(nextBlockTypes.pop(), BEGIN_X, BEGIN_Y);
         if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
             gameEnd();
+            return;
         }
         nowBlock.drawDown(BEGIN_X, BEGIN_Y);
         drawNextBlocks();
@@ -23,6 +24,7 @@ var drawNewBlock = function(blockType) {
         nowBlock = drawNewBlock(blockType, BEGIN_X, BEGIN_Y);
         if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
             gameEnd();
+            return;
         }
         nowBlock.drawDown(BEGIN_X, BEGIN_Y);
     }

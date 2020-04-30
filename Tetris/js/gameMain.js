@@ -10,5 +10,6 @@ var gameStart = function(){
 }
 
 var gameEnd = function() {
+    clearInterval(gameId);
     alert("game over!");
 };
