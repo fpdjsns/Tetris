@@ -6,6 +6,7 @@ function Block(blockTypeIndex, x, y) {
     this.shape = this.type.shape[this.shapeIndex];
     this.x = x;
     this.y = y;
+    this.isLoaded = false;
 
     this.drawPreview = function(nx, ny) {
         for (var k = 0; ; k++) {
@@ -26,32 +27,35 @@ function Block(blockTypeIndex, x, y) {
     }
 
     this.drawLeftOrRight = function(nx, ny) {
-        if (
-            this.isDuplicatedBlockOrOutOfGameScreen(nx, ny) != NONE_DUPLICATED
-        ) {
+        var isDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(nx, ny);
+        if (isDuplicated != NONE_DUPLICATED) {
             console.log("duplicated!");
         } else {
             this.eraseBeforeBlock();
             this.drawBlock(nx, ny);
         }
+        timer.refreshBottomTemp();
     };
+
+    this.checkRowsAndErase = function() {
+        checkRowsAndErase(
+            this.y,
+            Math.min(
+                GAME_SCREEN_HEIGHT_NUM - 1,
+                this.y + SMALL_BLOCK_NUM - 1
+            )
+        );
+    }
 
     this.drawDown = function(nx, ny) {
         if (this.isBottom(nx, ny)) {
-            setBlockInGameScreen(this);
-
-            //한 줄 지울 수 있는지 체크
-            checkRowsAndErase(
-                this.y,
-                Math.min(
-                    GAME_SCREEN_HEIGHT_NUM - 1,
-                    this.y + SMALL_BLOCK_NUM - 1
-                )
-            );
-            setTimeout(drawNewBlock(), WAIT_NEXTBLOCK_TIME);
+            timer.startBottom();
+            timer.startBottomTemp();
         } else {
             this.eraseBeforeBlock();
             this.drawBlock(nx, ny);
+            timer.stopBottom();
+            timer.stopBottomTemp();
         }
     };
 

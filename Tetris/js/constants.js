@@ -25,7 +25,6 @@ const NOW_DELETE = -2;
 
 const BEGIN_X = GAME_SCREEN_LEFT + GAME_SCREEN_WIDTH_NUM / 2 - 4 / 2;
 const BEGIN_Y = GAME_SCREEN_TOP;
-const SPEED = 1000;
 
 const NONE_DUPLICATED = 0;
 const LEFT_DUPLICATED = 1;
@@ -33,3 +32,7 @@ const RIGHT_DUPLICATED = 2;
 const EITHER_DUPLICATED = 3;
 
 const LINE_COLOR = "black";
+
+const SPEED = 1000; // 1sec
+const BLOCK_BOTTOM_TIMEOUT = 2000; // 4sec
+const BLOCK_BOTTOM_TEMP_TIMEOUT = 500; // 0.5sec

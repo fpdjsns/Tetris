@@ -5,9 +5,21 @@ var gameScreenArray = new Array(GAME_SCREEN_HEIGHT_NUM)
     .fill(-1)
     .map(row => new Array(GAME_SCREEN_WIDTH_NUM).fill(-1));
 
-var gameId = setInterval(function() {
-    nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
-}, SPEED);
+
+var blockBottomId; // 블럭이 바닥에 닿았는지 
+var blockBottomTempId; // 블럭이 바닥에 닿았을 때 이동, 회전을 하기 위한 다음 interval
+
+var gameStart = function() {
+    drawNewBlock();
+    drawWhiteLineOnBackground();
+    timer.startGame();
+}
+
+
+var gameEnd = function() {
+    alert("game over!");
+};
+
 
 // blockType 있는 경우 블럭 생성 x. blockType을 제일 위부터 떨어뜨리기만 한다.
 // blockType 없는 경우 새로운 블럭 생성
@@ -15,7 +27,7 @@ var drawNewBlock = function(blockType) {
     if(blockType == undefined){
         nowBlock = new Block(nextBlockTypes.pop(), BEGIN_X, BEGIN_Y);
         if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
-            gameEnd();
+            timer.stopGame();
             return;
         }
         nowBlock.drawDown(BEGIN_X, BEGIN_Y);
@@ -23,12 +35,15 @@ var drawNewBlock = function(blockType) {
     } else {
         nowBlock = drawNewBlock(blockType, BEGIN_X, BEGIN_Y);
         if (nowBlock.isBottom(BEGIN_X, BEGIN_Y)) {
-            gameEnd();
+            timer.stopGame();
             return;
         }
         nowBlock.drawDown(BEGIN_X, BEGIN_Y);
     }
 };
+
+var timer = new Timer(SPEED, BLOCK_BOTTOM_TIMEOUT, BLOCK_BOTTOM_TEMP_TIMEOUT, function() { nowBlock.drawDown(nowBlock.x, nowBlock.y + 1)}, gameEnd, 
+    function() {setBlockInGameScreen(nowBlock); nowBlock.checkRowsAndErase(); drawNewBlock();});
 
 var drawNextBlocks = function() {
     var nextBlocks = nextBlockTypes.toArray();
@@ -182,6 +197,8 @@ var drawBelow = function(block) {
         y = y + 1;
     }
 
+    timer.stopBottom();
+    timer.stopBottomTemp();
     block.drawBlock(x, y);
     setBlockInGameScreen(block);
     checkRowsAndErase(
