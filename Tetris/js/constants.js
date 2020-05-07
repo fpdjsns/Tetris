@@ -31,8 +31,10 @@ const LEFT_DUPLICATED = 1;
 const RIGHT_DUPLICATED = 2;
 const EITHER_DUPLICATED = 3;
 
-const LINE_COLOR = "black";
+const LINE_COLOR = "gray";
 
 const SPEED = 1000; // 1sec
 const BLOCK_BOTTOM_TIMEOUT = 2000; // 4sec
 const BLOCK_BOTTOM_TEMP_TIMEOUT = 500; // 0.5sec
+const SPEED_UP_INTERVAL = 10000; // 10sec
+const SPEED_UNIT_PERCENT = 0.9; // 90%

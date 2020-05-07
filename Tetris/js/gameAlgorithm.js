@@ -42,7 +42,8 @@ var drawNewBlock = function(blockType) {
     }
 };
 
-var timer = new Timer(SPEED, BLOCK_BOTTOM_TIMEOUT, BLOCK_BOTTOM_TEMP_TIMEOUT, function() { nowBlock.drawDown(nowBlock.x, nowBlock.y + 1)}, gameEnd, 
+var timer = new Timer(SPEED, BLOCK_BOTTOM_TIMEOUT, BLOCK_BOTTOM_TEMP_TIMEOUT, SPEED_UP_INTERVAL, SPEED_UNIT_PERCENT,
+    function() { nowBlock.drawDown(nowBlock.x, nowBlock.y + 1)}, gameEnd, 
     function() {setBlockInGameScreen(nowBlock); nowBlock.checkRowsAndErase(); drawNewBlock();});
 
 var drawNextBlocks = function() {
