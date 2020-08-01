@@ -127,7 +127,7 @@ var eraseRow = function(row) {
 var eraseOneBlock = function(x, y) {
     ctx.clearRect(
         x * SMALL_BLOCK_SIZE + BLOCK_GAP,
-        y * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        (y - HIDE_SCREEN_HEIGHT_NUM) * SMALL_BLOCK_SIZE + BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP
     );
@@ -137,7 +137,7 @@ var drawOneBlockWithColor = function(x, y, colorName) {
     ctx.fillStyle = colorName;
     ctx.fillRect(
         x * SMALL_BLOCK_SIZE + BLOCK_GAP,
-        y * SMALL_BLOCK_SIZE + BLOCK_GAP,
+        (y - HIDE_SCREEN_HEIGHT_NUM) * SMALL_BLOCK_SIZE + BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP,
         SMALL_BLOCK_SIZE - BLOCK_GAP
     );
