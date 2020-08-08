@@ -60,7 +60,7 @@ var drawNextBlocks = function() {
                     ctxNextBlock.fillStyle = "white";
                 }
                 ctxNextBlock.fillRect(
-                    j * SMALL_BLOCK_SIZE + x + BLOCK_GAP,
+                    SMALL_BLOCK_SIZE + j * SMALL_BLOCK_SIZE + x + BLOCK_GAP,
                     i * SMALL_BLOCK_SIZE + y + BLOCK_GAP,
                     SMALL_BLOCK_SIZE - BLOCK_GAP,
                     SMALL_BLOCK_SIZE - BLOCK_GAP
@@ -85,7 +85,7 @@ var drawKeepBlock = function() {
                 ctxKeepBlock.fillStyle = "white";
             }
             ctxKeepBlock.fillRect(
-                (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                SMALL_BLOCK_SIZE + (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
                 (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
                 SMALL_BLOCK_SIZE - BLOCK_GAP,
                 SMALL_BLOCK_SIZE - BLOCK_GAP
