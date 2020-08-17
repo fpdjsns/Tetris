@@ -2,8 +2,7 @@
 function Block(blockTypeIndex, x, y) {
     this.typeIndex = blockTypeIndex;
     this.type = blockType[this.typeIndex];
-    this.shapeIndex = 0;
-    this.shape = this.type.shape[this.shapeIndex];
+    this.shape = [...this.type.shape];
     this.x = x;
     this.y = y;
     this.isLoaded = false;
@@ -139,12 +138,24 @@ function Block(blockTypeIndex, x, y) {
 
     this.rotation = function() {
         this.eraseBeforeBlock();
-        this.shapeIndex = (this.shapeIndex + 1) % this.type.shape.length;
-        this.shape = this.type.shape[this.shapeIndex];
+        var length = this.shape.length
+        var nextShape =  [[],[],[],[]];
+        
+        for (var i = 0; i < length; i++) {
+            for (var j = 0; j < length; j++) {
+                var nx = length - 1 - j;
+                var ny = i;
+                var old = this.shape[i][j];
+                nextShape[nx][ny] = old;
+            }
+        }
+
         var checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(
             this.x,
             this.y
         );
+
+        var rotatable = true;
         if (checkDuplicated != NONE_DUPLICATED) {
             var moveIndex = 0;
             if (
@@ -180,15 +191,15 @@ function Block(blockTypeIndex, x, y) {
                 }
             }
 
-            // 움직여도 안되는 경우
-            if (moveIndex == 0) {
-                this.shapeIndex =
-                    (this.shapeIndex + this.type.shape.length - 1) %
-                    this.type.shape.length;
-                this.shape = this.type.shape[this.shapeIndex];
-            } else {
+            if (moveIndex == 0) { // x축을 움직여도 안되는경우 회전하지 않음
+                rotatable = false;
+            } else { // x축을 움직인다.
                 this.x += moveIndex;
             }
+        }
+
+        if(rotatable) {
+            this.shape = nextShape.slice();
         }
         this.drawBlock(this.x, this.y);
     };

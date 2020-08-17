@@ -66,7 +66,6 @@ var upKeyDown = function() {
 
     //rotation
     nowBlock.rotation();
-    nowBlock.drawBlock(nowBlock.x, nowBlock.y);
 };
 var rightKeyDown = function() {
     //right
