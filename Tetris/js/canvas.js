@@ -13,14 +13,14 @@ if (canvas.getContext) {
     var ctxNextBlock = canvasNextBlock.getContext("2d");
     canvasNextBlock.width = (BIG_BLOCK_SIZE + 2*SMALL_BLOCK_SIZE);
     canvasNextBlock.height = BIG_BLOCK_SIZE * NEXT_BLOCK_SIZE + 2*SMALL_BLOCK_SIZE;
-    ctxNextBlock.lineWidth = 2;
+    ctxNextBlock.lineWidth = CANVAS_BORDER_LINE_WIDTH;
     ctxNextBlock.strokeStyle="black";
     ctxNextBlock.strokeRect(0, 0, canvasNextBlock.width, canvasNextBlock.height);
 
     var ctxKeepBlock = canvasKeepBlock.getContext("2d");
     canvasKeepBlock.width = (BIG_BLOCK_SIZE + 2*SMALL_BLOCK_SIZE);
     canvasKeepBlock.height = (BIG_BLOCK_SIZE + 2*SMALL_BLOCK_SIZE);
-    ctxKeepBlock.lineWidth = 2;
+    ctxKeepBlock.lineWidth = CANVAS_BORDER_LINE_WIDTH;
     ctxKeepBlock.strokeStyle="black";
     ctxKeepBlock.strokeRect(0, 0, canvasKeepBlock.width, canvasKeepBlock.height);
 

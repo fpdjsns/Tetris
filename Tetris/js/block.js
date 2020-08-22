@@ -3,6 +3,7 @@ function Block(blockTypeIndex, x, y) {
     this.typeIndex = blockTypeIndex;
     this.type = blockType[this.typeIndex];
     this.shape = [...this.type.shape];
+    this.blockNum = this.shape.length
     this.x = x;
     this.y = y;
     this.isLoaded = false;
@@ -41,7 +42,7 @@ function Block(blockTypeIndex, x, y) {
             this.y,
             Math.min(
                 GAME_SCREEN_HEIGHT_NUM - 1,
-                this.y + SMALL_BLOCK_NUM - 1
+                this.y + this.blockNum - 1
             )
         );
     }
@@ -64,8 +65,8 @@ function Block(blockTypeIndex, x, y) {
     };
 
     this.eraseBlock = function(x, y) {        
-        for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-            for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+        for (var i = 0; i < this.blockNum; i++) {
+            for (var j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
                     eraseOneBlock(x + j, y + i);
                 }
@@ -74,8 +75,8 @@ function Block(blockTypeIndex, x, y) {
     }
 
     this.justDrawBlock = function(x, y, colorName) {
-        for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-            for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+        for (var i = 0; i < this.blockNum; i++) {
+            for (var j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
                     if(colorName == undefined){
                         drawOneBlock(x + j, y + i, this.typeIndex);
@@ -99,12 +100,15 @@ function Block(blockTypeIndex, x, y) {
         this.y = y;
     };
 
-    this.isDuplicatedBlockOrOutOfGameScreen = function(x, y) {
-        for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-            for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+    this.isDuplicatedBlockOrOutOfGameScreen = function(x, y, block) {
+        var checkShape = this.shape;
+        if(block != undefined) checkShape = block;
+
+        for (var i = 0; i < this.blockNum; i++) {
+            for (var j = 0; j < this.blockNum; j++) {
                 var nx = x + i;
                 var ny = y + j;
-                if (this.shape[j][i] == 0) continue;
+                if (checkShape[j][i] == 0) continue;
 
                 // out of game screen
                 if (nx < 0) {
@@ -123,8 +127,8 @@ function Block(blockTypeIndex, x, y) {
     };
 
     this.isBottom = function(x, y) {
-        for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-            for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+        for (var i = 0; i < this.blockNum; i++) {
+            for (var j = 0; j < this.blockNum; j++) {
                 var nx = x + i;
                 var ny = y + j;
                 if (this.shape[j][i] == 0) continue;
@@ -139,20 +143,17 @@ function Block(blockTypeIndex, x, y) {
     this.rotation = function() {
         this.eraseBeforeBlock();
         var length = this.shape.length
-        var nextShape =  [[],[],[],[]];
+        var nextShape =  [];
+        for(var i = 0; i < length; i++) nextShape[i] = [];
         
-        for (var i = 0; i < length; i++) {
-            for (var j = 0; j < length; j++) {
-                var nx = length - 1 - j;
-                var ny = i;
-                var old = this.shape[i][j];
-                nextShape[nx][ny] = old;
-            }
-        }
+        for (var i = 0; i < length; i++) 
+            for (var j = 0; j < length; j++) 
+                nextShape[length - 1 - j][i] = this.shape[i][j];
 
         var checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(
             this.x,
-            this.y
+            this.y,
+            nextShape
         );
 
         var rotatable = true;
@@ -162,11 +163,12 @@ function Block(blockTypeIndex, x, y) {
                 checkDuplicated == LEFT_DUPLICATED ||
                 checkDuplicated == EITHER_DUPLICATED
             ) {
-                for (var i = 1; i < SMALL_BLOCK_NUM; i++) {
+                for (var i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
                             this.x + i,
-                            this.y
+                            this.y,
+                            nextShape
                         ) == NONE_DUPLICATED
                     ) {
                         moveIndex = i;
@@ -178,11 +180,12 @@ function Block(blockTypeIndex, x, y) {
                 checkDuplicated == RIGHT_DUPLICATED ||
                 checkDuplicated == EITHER_DUPLICATED
             ) {
-                for (var i = 1; i < SMALL_BLOCK_NUM; i++) {
+                for (var i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
                             this.x - i,
-                            this.y
+                            this.y,
+                            nextShape
                         ) == NONE_DUPLICATED
                     ) {
                         moveIndex = -i;

@@ -48,20 +48,21 @@ var timer = new Timer(SPEED, BLOCK_BOTTOM_TIMEOUT, BLOCK_BOTTOM_TEMP_TIMEOUT, SP
 
 var drawNextBlocks = function() {
     var nextBlocks = nextBlockTypes.toArray();
-    var x = 0;
-    var y = 0;
+    var x = SMALL_BLOCK_SIZE + 2 * CANVAS_BORDER_LINE_WIDTH;
+    var y = SMALL_BLOCK_SIZE + 2 * CANVAS_BORDER_LINE_WIDTH;
+
+    ctxNextBlock.clearRect(CANVAS_BORDER_LINE_WIDTH, CANVAS_BORDER_LINE_WIDTH, 
+        canvasNextBlock.width - 2 * CANVAS_BORDER_LINE_WIDTH, 
+        canvasNextBlock.height - 2 * CANVAS_BORDER_LINE_WIDTH);
     for (var k = 0; k < NEXT_BLOCK_SIZE; k++) {
         var nextBlock = blockType[nextBlocks[k]];
-        for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-            for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-                if (nextBlock.shape[0][i][j] == 1) {
-                    ctxNextBlock.fillStyle = nextBlock.color;
-                } else {
-                    ctxNextBlock.fillStyle = "white";
-                }
+        ctxNextBlock.fillStyle = nextBlock.color;
+        for (var i = 0; i < nextBlock.shape.length; i++) {
+            for (var j = 0; j < nextBlock.shape.length; j++) {
+                if (nextBlock.shape[i][j] == 0) continue;
                 ctxNextBlock.fillRect(
-                    SMALL_BLOCK_SIZE + j * SMALL_BLOCK_SIZE + x + BLOCK_GAP,
-                    i * SMALL_BLOCK_SIZE + y + BLOCK_GAP,
+                    x + j * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                    y + i * SMALL_BLOCK_SIZE + BLOCK_GAP,
                     SMALL_BLOCK_SIZE - BLOCK_GAP,
                     SMALL_BLOCK_SIZE - BLOCK_GAP
                 );
@@ -74,24 +75,25 @@ var drawNextBlocks = function() {
 var drawKeepBlock = function() {
     var keepBlock = keepBlockType;
     if(!keepBlock) return;
-
-    var x = 0;
-    var y = 0;
-    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
-            if (keepBlock.shape[0][i][j] == 1) {
-                ctxKeepBlock.fillStyle = keepBlock.color;
-            } else {
-                ctxKeepBlock.fillStyle = "white";
-            }
+    var x = SMALL_BLOCK_SIZE;
+    var y = SMALL_BLOCK_SIZE;
+    
+    ctxKeepBlock.clearRect(CANVAS_BORDER_LINE_WIDTH, CANVAS_BORDER_LINE_WIDTH, 
+        canvasKeepBlock.width - 2*CANVAS_BORDER_LINE_WIDTH, 
+        canvasKeepBlock.height - 2*CANVAS_BORDER_LINE_WIDTH);
+    ctxKeepBlock.fillStyle = keepBlock.color;
+    for (var i = 0; i < keepBlock.shape.length; i++) {
+        for (var j = 0; j < keepBlock.shape.length; j++) {
+            if (keepBlock.shape[i][j] == 0) continue;
             ctxKeepBlock.fillRect(
-                SMALL_BLOCK_SIZE + (x + j) * SMALL_BLOCK_SIZE + BLOCK_GAP,
-                (y + i) * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                x + j * SMALL_BLOCK_SIZE + BLOCK_GAP,
+                y + i * SMALL_BLOCK_SIZE + BLOCK_GAP,
                 SMALL_BLOCK_SIZE - BLOCK_GAP,
                 SMALL_BLOCK_SIZE - BLOCK_GAP
             );
         }
     }
+    ctxKeepBlock.fillStyle = "white";
 };
 
 // sy ~ se row에서 지워질 수 있는 행 체크 & 지우기
@@ -204,14 +206,14 @@ var drawBelow = function(block) {
     setBlockInGameScreen(block);
     checkRowsAndErase(
         y,
-        Math.min(GAME_SCREEN_HEIGHT_NUM - 1, y + SMALL_BLOCK_NUM - 1)
+        Math.min(GAME_SCREEN_HEIGHT_NUM - 1, y + block.blockNum - 1)
     );
     drawNewBlock();
 };
 
 var setBlockInGameScreen = function(block) {
-    for (var i = 0; i < SMALL_BLOCK_NUM; i++) {
-        for (var j = 0; j < SMALL_BLOCK_NUM; j++) {
+    for (var i = 0; i < block.blockNum; i++) {
+        for (var j = 0; j < block.blockNum; j++) {
             if (block.shape[j][i] == 1) {
                 gameScreenArray[block.y + j][block.x + i] = block.typeIndex;
             }
