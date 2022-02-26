@@ -1,33 +1,35 @@
+class Block {
 
-function Block(blockTypeIndex, x, y) {
-    this.typeIndex = blockTypeIndex;
-    this.type = blockType[this.typeIndex];
-    this.shape = [...this.type.shape];
-    this.blockNum = this.shape.length
-    this.x = x;
-    this.y = y;
-    this.isLoaded = false;
+    constructor(blockTypeIndex, x, y) {
+        this.typeIndex = blockTypeIndex;
+        this.type = blockType[this.typeIndex];
+        this.shape = [...this.type.shape];
+        this.blockNum = this.shape.length
+        this.x = x;
+        this.y = y;
+        this.isLoaded = false;
+    }
 
-    this.drawPreview = function(nx, ny) {
-        for (var k = 0; ; k++) {
-            if(this.isBottom(nx, ny + k + 1)) {
-                this.justDrawBlock(nx, ny + k, 'gray');
+    drawPreview() {
+        for (let k = 0; ; k++) {
+            if (this.isBottom(this.x, this.y + k + 1)) {
+                this.justDrawBlock(this.x, this.y + k, 'gray');
                 return;
             }
         }
     }
 
-    this.erasePreview = function(x, y) {
-        for (var k = 0; ; k++) {
-            if(this.isBottom(x, y + k + 1)) {
-                this.eraseBlock(x, y + k);
+    erasePreview() {
+        for (let k = 0; ; k++) {
+            if (this.isBottom(this.x, this.y + k + 1)) {
+                this.eraseBlock(this.x, this.y + k);
                 return;
             }
         }
     }
 
-    this.drawLeftOrRight = function(nx, ny) {
-        var isDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(nx, ny);
+    drawLeftOrRight(nx, ny) {
+        const isDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(nx, ny);
         if (isDuplicated != NONE_DUPLICATED) {
             console.log("duplicated!");
         } else {
@@ -35,9 +37,9 @@ function Block(blockTypeIndex, x, y) {
             this.drawBlock(nx, ny);
         }
         timer.refreshBottomTemp();
-    };
+    }
 
-    this.checkRowsAndErase = function() {
+    checkRowsAndErase() {
         checkRowsAndErase(
             this.y,
             Math.min(
@@ -47,7 +49,7 @@ function Block(blockTypeIndex, x, y) {
         );
     }
 
-    this.drawDown = function(nx, ny) {
+    drawDown(nx = this.x, ny = this.y + 1) {
         if (this.isBottom(nx, ny)) {
             timer.startBottom();
             timer.startBottomTemp();
@@ -57,16 +59,16 @@ function Block(blockTypeIndex, x, y) {
             timer.stopBottom();
             timer.stopBottomTemp();
         }
-    };
+    }
 
-    this.eraseBeforeBlock = function() {
-        this.erasePreview(this.x, this.y);
-        this.eraseBlock(this.x, this.y);
-    };
+    eraseBeforeBlock() {
+        this.erasePreview();
+        this.eraseBlock();
+    }
 
-    this.eraseBlock = function(x, y) {        
-        for (var i = 0; i < this.blockNum; i++) {
-            for (var j = 0; j < this.blockNum; j++) {
+    eraseBlock(x = this.x, y = this.y) {
+        for (let i = 0; i < this.blockNum; i++) {
+            for (let j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
                     eraseOneBlock(x + j, y + i);
                 }
@@ -74,11 +76,11 @@ function Block(blockTypeIndex, x, y) {
         }
     }
 
-    this.justDrawBlock = function(x, y, colorName) {
-        for (var i = 0; i < this.blockNum; i++) {
-            for (var j = 0; j < this.blockNum; j++) {
+    justDrawBlock(x = this.x, y = this.y, colorName = undefined) {
+        for (let i = 0; i < this.blockNum; i++) {
+            for (let j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
-                    if(colorName == undefined){
+                    if (colorName == undefined) {
                         drawOneBlock(x + j, y + i, this.typeIndex);
                     } else {
                         drawOneBlockWithColor(x + j, y + i, colorName);
@@ -88,21 +90,21 @@ function Block(blockTypeIndex, x, y) {
         }
     }
 
-    this.drawBlock = function(x, y) {
-        
-        // this.erasePreview(this.x, this.y);
-        this.drawPreview(x, y);
-
-        // Change colors just before drawing to avoid affecting the previous or next block color.
-        this.justDrawBlock(x, y);
-
+    drawBlock(x, y) {
         this.x = x;
         this.y = y;
-    };
 
-    this.isDuplicatedBlockOrOutOfGameScreen = function(x, y, block) {
+        // this.erasePreview(this.x, this.y);
+        this.drawPreview();
+
+        // Change colors just before drawing to avoid affecting the previous or next block color.
+        this.justDrawBlock();
+
+    }
+
+    isDuplicatedBlockOrOutOfGameScreen(x, y, block) {
         var checkShape = this.shape;
-        if(block != undefined) checkShape = block;
+        if (block != undefined) checkShape = block;
 
         for (var i = 0; i < this.blockNum; i++) {
             for (var j = 0; j < this.blockNum; j++) {
@@ -124,13 +126,13 @@ function Block(blockTypeIndex, x, y) {
             }
         }
         return NONE_DUPLICATED;
-    };
+    }
 
-    this.isBottom = function(x, y) {
-        for (var i = 0; i < this.blockNum; i++) {
-            for (var j = 0; j < this.blockNum; j++) {
-                var nx = x + i;
-                var ny = y + j;
+    isBottom(x, y) {
+        for (let i = 0; i < this.blockNum; i++) {
+            for (let j = 0; j < this.blockNum; j++) {
+                const nx = x + i;
+                const ny = y + j;
                 if (this.shape[j][i] == 0) continue;
 
                 if (GAME_SCREEN_HEIGHT_NUM <= ny) return true;
@@ -138,16 +140,16 @@ function Block(blockTypeIndex, x, y) {
             }
         }
         return false;
-    };
+    }
 
-    this.rotation = function() {
+    rotation() {
         this.eraseBeforeBlock();
-        var length = this.shape.length
-        var nextShape =  [];
-        for(var i = 0; i < length; i++) nextShape[i] = [];
-        
-        for (var i = 0; i < length; i++) 
-            for (var j = 0; j < length; j++) 
+        const length = this.shape.length;
+        const nextShape = [];
+        for (let i = 0; i < length; i++) nextShape[i] = [];
+
+        for (let i = 0; i < length; i++)
+            for (let j = 0; j < length; j++)
                 nextShape[length - 1 - j][i] = this.shape[i][j];
 
         var checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(
@@ -156,14 +158,14 @@ function Block(blockTypeIndex, x, y) {
             nextShape
         );
 
-        var rotatable = true;
+        let rotatable = true;
         if (checkDuplicated != NONE_DUPLICATED) {
             var moveIndex = 0;
             if (
                 checkDuplicated == LEFT_DUPLICATED ||
                 checkDuplicated == EITHER_DUPLICATED
             ) {
-                for (var i = 1; i < this.blockNum; i++) {
+                for (i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
                             this.x + i,
@@ -180,7 +182,7 @@ function Block(blockTypeIndex, x, y) {
                 checkDuplicated == RIGHT_DUPLICATED ||
                 checkDuplicated == EITHER_DUPLICATED
             ) {
-                for (var i = 1; i < this.blockNum; i++) {
+                for (let i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
                             this.x - i,
@@ -201,9 +203,9 @@ function Block(blockTypeIndex, x, y) {
             }
         }
 
-        if(rotatable) {
+        if (rotatable) {
             this.shape = nextShape.slice();
         }
         this.drawBlock(this.x, this.y);
-    };
+    }
 }

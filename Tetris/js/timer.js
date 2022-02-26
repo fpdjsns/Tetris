@@ -4,7 +4,7 @@ class Timer {
     // gameFunction, gameoverFunction, whenDropBlockNextFunction은 파라미터가 없는 함수이다.
     // sppeed, bottomTimeInterval, bottomTimeTempInterval은 모두 밀리 세컨드
     constructor(speed, bottomTimeInterval, bottomTimeTempInterval, speedUpInterval, speedUnitPercent,
-        gameFunction, gameoverFunction, whenDropBlockNextFunction) {
+                gameFunction, gameoverFunction, whenDropBlockNextFunction) {
         this.speed = speed;
         this.bottomTimeInterval = bottomTimeInterval;
         this.bottomTimeTempInterval = bottomTimeTempInterval;
@@ -24,11 +24,11 @@ class Timer {
     // ==== difficulty ====
     // ---- 난이도 조절 ----
     setDifficulty() {
-        var that = this;
-        if(this.difficultyTimerId){
+        const that = this;
+        if (this.difficultyTimerId) {
             clearInterval(this.difficultyTimerId);
         }
-        that.difficultyTimerId = setInterval(function() {
+        that.difficultyTimerId = setInterval(function () {
             that.speed *= that.speedUnitPercent;
             console.log(that.speed);
             that.refreshGame(that.speed);
@@ -42,12 +42,12 @@ class Timer {
     }
 
     refreshGame(speed) {
-        var that = this;
-        if(this.gameTimerId)
+        const that = this;
+        if (this.gameTimerId)
             clearInterval(this.gameTimerId);
-        return that.gameTimerId = setInterval(function() {
-            if(that.bottomTime != null && that.bottomTempTime != null){
-                if(new Date().valueOf() < Math.min(that.bottomTime, that.bottomTempTime)) {
+        return that.gameTimerId = setInterval(function () {
+            if (that.bottomTime != null && that.bottomTempTime != null) {
+                if (new Date().valueOf() < Math.min(that.bottomTime, that.bottomTempTime)) {
                     return;
                 } else {
                     that.bottomTime = null;
@@ -60,7 +60,7 @@ class Timer {
     }
 
     stopGame() {
-        if(!this.gameTimerId) return;
+        if (!this.gameTimerId) return;
         clearInterval(this.gameTimerId);
         this.gameTimerId = null;
         clearInterval(this.difficultyTimerId);
@@ -70,8 +70,8 @@ class Timer {
 
     // ==== bottom ====
     startBottom() {
-        if(this.bottomTime != null) return; // 있는 경우 패스
-        var tmp = new Date().valueOf();
+        if (this.bottomTime != null) return; // 있는 경우 패스
+        const tmp = new Date().valueOf();
         this.bottomTime = tmp + this.bottomTimeInterval;
     }
 
@@ -81,13 +81,13 @@ class Timer {
 
     // ==== bottomTemp ====
     startBottomTemp() {
-        if(this.bottomTempTime != null) return; // 있는 경우 패스
-        var tmp = new Date().valueOf();
+        if (this.bottomTempTime != null) return; // 있는 경우 패스
+        const tmp = new Date().valueOf();
         this.bottomTempTime = tmp + this.bottomTimeTempInterval;
     }
 
     refreshBottomTemp() {
-        var tmp = new Date().valueOf();
+        const tmp = new Date().valueOf();
         this.bottomTempTime = tmp + this.bottomTimeTempInterval;
     }
 

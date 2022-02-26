@@ -19,13 +19,13 @@ const MOBILE_BUTTON = {
 }
 
 // mobile인지
-const isMobile = (function() {
+const isMobile = (function () {
     var userAgent = navigator.userAgent;
-    
+
     var isMobile = false;
     if (userAgent.indexOf("iPhone") > 0 || userAgent.indexOf("iPot") > 0 || userAgent.indexOf("iPad") > 0) {
         console.log("iPhone or iPot or iPad");
-        isMobile = true; 
+        isMobile = true;
     } else if (userAgent.indexOf("Android") > 0) {
         console.log("Android");
         isMobile = true;
@@ -41,8 +41,8 @@ const keyCode = {
     ...(isMobile ? MOBILE_BUTTON : PC_BUTTON)
 };
 
-(function() {
-    if(isMobile) { // mobile인 경우
+(function () {
+    if (isMobile) { // mobile인 경우
         // 300% 확대
         document.body.style.zoom = "300%";
     }
@@ -55,55 +55,55 @@ var arrow_left = $(".fa-arrow-left");
 var arrow_right = $(".fa-arrow-right");
 var spacebar = $(".fa-arrow-circle-down");
 
-var leftKeyDown = function() {
+var leftKeyDown = function () {
     //left
     arrow_left.addClass("click");
     nowBlock.drawLeftOrRight(nowBlock.x - 1, nowBlock.y);
 };
-var upKeyDown = function() {
+var upKeyDown = function () {
     //up
     arrow_up.addClass("click");
 
     //rotation
     nowBlock.rotation();
 };
-var rightKeyDown = function() {
+var rightKeyDown = function () {
     //right
     arrow_right.addClass("click");
     nowBlock.drawLeftOrRight(nowBlock.x + 1, nowBlock.y);
 };
-var downKeyDown = function() {
+var downKeyDown = function () {
     //down
     arrow_down.addClass("click");
-    nowBlock.drawDown(nowBlock.x, nowBlock.y + 1);
+    nowBlock.drawDown();
 };
-var spacebarKeyDown = function() {
+var spacebarKeyDown = function () {
     spacebar.addClass("click");
     drawBelow(nowBlock);
 };
 
-const keepOrLoadBlockKey = function() {
+const keepOrLoadBlockKey = function () {
     keepOrLoadBlock();
 };
 
-var leftKeyUp = function() {
+var leftKeyUp = function () {
     arrow_left.removeClass("click");
 };
-var upKeyUp = function() {
+var upKeyUp = function () {
     arrow_up.removeClass("click");
 };
-var rightKeyUp = function() {
+var rightKeyUp = function () {
     arrow_right.removeClass("click");
 };
-var downKeyUp = function() {
+var downKeyUp = function () {
     arrow_down.removeClass("click");
 };
-var spacebarKeyUp = function() {
+var spacebarKeyUp = function () {
     spacebar.removeClass("click");
 };
 
 // TODO 함수나 변수 배열에 정리하면 switch 안쓰고 더 깔끔하게 할 수 있을 듯.
-$(document).keydown(function(e) {
+$(document).keydown(function (e) {
     switch (e.keyCode) {
         case keyCode.LEFT:
             leftKeyDown();
@@ -128,7 +128,7 @@ $(document).keydown(function(e) {
     }
 });
 
-$(document).keyup(function(e) {
+$(document).keyup(function (e) {
     switch (e.keyCode) {
         case keyCode.LEFT:
             leftKeyUp();
