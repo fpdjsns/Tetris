@@ -58,7 +58,7 @@ var spacebar = $(".fa-arrow-circle-down");
 var leftKeyDown = function () {
     //left
     arrow_left.addClass("click");
-    nowBlock.drawLeftOrRight(nowBlock.x - 1, nowBlock.y);
+    nowBlock.moveLeft();
 };
 var upKeyDown = function () {
     //up
@@ -70,7 +70,7 @@ var upKeyDown = function () {
 var rightKeyDown = function () {
     //right
     arrow_right.addClass("click");
-    nowBlock.drawLeftOrRight(nowBlock.x + 1, nowBlock.y);
+    nowBlock.moveRight();
 };
 var downKeyDown = function () {
     //down
@@ -79,7 +79,7 @@ var downKeyDown = function () {
 };
 var spacebarKeyDown = function () {
     spacebar.addClass("click");
-    drawBelow(nowBlock);
+    moveBottomAndSetting();
 };
 
 const keepOrLoadBlockKey = function () {

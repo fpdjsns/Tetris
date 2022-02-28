@@ -41,6 +41,16 @@ const blockTypeMap = blockType.reduce((map, type, index, array) => {
     return map;
 }, new Map());
 
-var getBlockTypeIndex = function(blockType) { 
+function getRotateShape(shape) {
+    const length = shape.length
+    const nextShape = [];
+    for (let i = 0; i < length; i++) nextShape[i] = [];
+    for (let i = 0; i < length; i++)
+        for (let j = 0; j < length; j++)
+            nextShape[length - 1 - j][i] = shape[i][j];
+    return nextShape;
+}
+
+var getBlockTypeIndex = function (blockType) {
     return blockTypeMap[blockType.name];
 }

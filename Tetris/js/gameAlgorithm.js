@@ -9,9 +9,7 @@ var timer = new Timer(SPEED, BLOCK_BOTTOM_TIMEOUT, BLOCK_BOTTOM_TEMP_TIMEOUT, SP
         nowBlock.drawDown()
     }, gameEnd,
     function () {
-        setBlockInGameScreen(nowBlock);
-        nowBlock.checkRowsAndErase();
-        drawNewBlock();
+        moveBottomAndSetting()
     });
 
 function gameStart() {
@@ -93,8 +91,8 @@ function drawKeepBlock() {
 // sy ~ se row에서 지워질 수 있는 행 체크 & 지우기
 // TODO test
 function checkRowsAndErase(sy, ey) {
-    var isEraseAnything = false;
-    for (var i = sy; i <= ey; i++) {
+    let isEraseAnything = false;
+    for (let i = sy; i <= ey; i++) {
         if (canEraseRow(i)) {
             eraseRow(i);
             isEraseAnything = true;
@@ -106,7 +104,7 @@ function checkRowsAndErase(sy, ey) {
 };
 
 function canEraseRow(row) {
-    for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
+    for (let j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
         if (gameScreenArray[row][j] == -1) {
             return false;
         }
@@ -115,7 +113,7 @@ function canEraseRow(row) {
 };
 
 function eraseRow(row) {
-    for (var j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
+    for (let j = 0; j < GAME_SCREEN_WIDTH_NUM; j++) {
         eraseOneBlock(row, j);
         gameScreenArray[row][j] = NOW_DELETE;
     }
@@ -185,31 +183,27 @@ function rearrange() {
     }
 };
 
-function drawBelow(block) {
+function moveBottomAndSetting(block = nowBlock) {
     console.log("below");
-    const x = block.x;
-    let y = block.y;
-    block.eraseBeforeBlock();
-    while (!block.isBottom(x, y + 1)) {
-        y = y + 1;
-    }
+    block.moveBottom()
+    setBlockInGameScreen(block);
+    block.checkRowsAndErase();
 
     timer.stopBottom();
     timer.stopBottomTemp();
-    block.drawBlock(x, y);
-    setBlockInGameScreen(block);
-    checkRowsAndErase(
-        y,
-        Math.min(GAME_SCREEN_HEIGHT_NUM - 1, y + block.blockNum - 1)
-    );
     drawNewBlock();
 };
 
 function setBlockInGameScreen(block) {
-    for (var i = 0; i < block.blockNum; i++) {
-        for (var j = 0; j < block.blockNum; j++) {
-            if (block.shape[j][i] == 1) {
-                gameScreenArray[block.y + j][block.x + i] = block.typeIndex;
+    const length = block.blockNum;
+    const typeIndex = block.typeIndex;
+    const shape = block.shape
+    const position = block.position
+
+    for (let i = 0; i < length; i++) {
+        for (let j = 0; j < length; j++) {
+            if (shape[j][i] == 1) {
+                gameScreenArray[position.y + j][position.x + i] = typeIndex;
             }
         }
     }

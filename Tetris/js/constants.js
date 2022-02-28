@@ -32,6 +32,7 @@ const NONE_DUPLICATED = 0;
 const LEFT_DUPLICATED = 1;
 const RIGHT_DUPLICATED = 2;
 const EITHER_DUPLICATED = 3;
+const BOTTOM_DUPLICATED = 4;
 
 const LINE_COLOR = "gray";
 

@@ -1,3 +1,16 @@
+function Point(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+Point.prototype.isEquals = function (x, y) {
+    return this.x == x && this.y == y;
+}
+
+Point.prototype.isLower = function (x, y) {
+    return this.y < y;
+};
+
 class Block {
 
     constructor(blockTypeIndex, x, y) {
@@ -5,68 +18,39 @@ class Block {
         this.type = blockType[this.typeIndex];
         this.shape = [...this.type.shape];
         this.blockNum = this.shape.length
-        this.x = x;
-        this.y = y;
+
+        this.position = new Point(x, y)
+        this.bottomPosition = new Point(x, y)
         this.isLoaded = false;
+
+        this.setPreviewCoordinate()
     }
 
+    // === private ===
     drawPreview() {
-        for (let k = 0; ; k++) {
-            if (this.isBottom(this.x, this.y + k + 1)) {
-                this.justDrawBlock(this.x, this.y + k, 'gray');
-                return;
-            }
-        }
+        this.justDrawBlock(this.bottomPosition.x, this.bottomPosition.y, 'gray');
     }
 
     erasePreview() {
+        this.eraseBlock(this.bottomPosition.x, this.bottomPosition.y);
+    }
+
+    moveLeftOrRight(nx, ny) {
+        this.move(nx, ny)
+        timer.refreshBottomTemp();
+    }
+
+    setPreviewCoordinate() {
         for (let k = 0; ; k++) {
-            if (this.isBottom(this.x, this.y + k + 1)) {
-                this.eraseBlock(this.x, this.y + k);
+            if (this.isBottom(this.position.x, this.position.y + k + 1)) {
+                this.bottomPosition.x = this.position.x
+                this.bottomPosition.y = this.position.y + k
                 return;
             }
         }
     }
 
-    drawLeftOrRight(nx, ny) {
-        const isDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(nx, ny);
-        if (isDuplicated != NONE_DUPLICATED) {
-            console.log("duplicated!");
-        } else {
-            this.eraseBeforeBlock();
-            this.drawBlock(nx, ny);
-        }
-        timer.refreshBottomTemp();
-    }
-
-    checkRowsAndErase() {
-        checkRowsAndErase(
-            this.y,
-            Math.min(
-                GAME_SCREEN_HEIGHT_NUM - 1,
-                this.y + this.blockNum - 1
-            )
-        );
-    }
-
-    drawDown(nx = this.x, ny = this.y + 1) {
-        if (this.isBottom(nx, ny)) {
-            timer.startBottom();
-            timer.startBottomTemp();
-        } else {
-            this.eraseBeforeBlock();
-            this.drawBlock(nx, ny);
-            timer.stopBottom();
-            timer.stopBottomTemp();
-        }
-    }
-
-    eraseBeforeBlock() {
-        this.erasePreview();
-        this.eraseBlock();
-    }
-
-    eraseBlock(x = this.x, y = this.y) {
+    eraseBlock(x = this.position.x, y = this.position.y) {
         for (let i = 0; i < this.blockNum; i++) {
             for (let j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
@@ -76,7 +60,7 @@ class Block {
         }
     }
 
-    justDrawBlock(x = this.x, y = this.y, colorName = undefined) {
+    justDrawBlock(x = this.position.x, y = this.position.y, colorName = undefined) {
         for (let i = 0; i < this.blockNum; i++) {
             for (let j = 0; j < this.blockNum; j++) {
                 if (this.shape[i][j] == 1) {
@@ -90,26 +74,14 @@ class Block {
         }
     }
 
-    drawBlock(x, y) {
-        this.x = x;
-        this.y = y;
+    isDuplicatedBlockOrOutOfGameScreen(x, y, shape = this.shape) {
+        let checkShape = shape;
 
-        // this.erasePreview(this.x, this.y);
-        this.drawPreview();
+        for (let i = 0; i < this.blockNum; i++) {
+            for (let j = 0; j < this.blockNum; j++) {
+                const nx = x + i;
+                const ny = y + j;
 
-        // Change colors just before drawing to avoid affecting the previous or next block color.
-        this.justDrawBlock();
-
-    }
-
-    isDuplicatedBlockOrOutOfGameScreen(x, y, block) {
-        var checkShape = this.shape;
-        if (block != undefined) checkShape = block;
-
-        for (var i = 0; i < this.blockNum; i++) {
-            for (var j = 0; j < this.blockNum; j++) {
-                var nx = x + i;
-                var ny = y + j;
                 if (checkShape[j][i] == 0) continue;
 
                 // out of game screen
@@ -118,6 +90,9 @@ class Block {
                 }
                 if (GAME_SCREEN_WIDTH_NUM < nx) {
                     return RIGHT_DUPLICATED;
+                }
+                if (GAME_SCREEN_HEIGHT_NUM <= ny) {
+                    return BOTTOM_DUPLICATED;
                 }
                 // duplicated another block
                 if (gameScreenArray[ny] != undefined && gameScreenArray[ny][nx] != -1) {
@@ -128,7 +103,78 @@ class Block {
         return NONE_DUPLICATED;
     }
 
-    isBottom(x, y) {
+    // 블럭을 nx, ny로 움직일 때 실행
+    // 블럭이 성공적으로 (nx, ny)로 움직였는지 boolean 값 반환
+    move(nx, ny, shape = this.shape) {
+        let moved = false
+
+        // 움직일 수 있는 곳인지 체크 가능하지 않다면
+        if (this.isDuplicatedBlockOrOutOfGameScreen(nx, ny) != NONE_DUPLICATED) {
+            console.log("duplicated!");
+        } else {
+            // bottom 좌표 갱신
+            this.eraseBeforeBlock();
+
+            // bottom 좌표와 동일한지 체크( = 바닥인지 체크)
+            if (this.bottomPosition.isLower(nx, ny)) {
+                ny = this.bottomPosition.y
+            } else {
+                // move
+                this.shape = shape;
+                moved = true
+            }
+
+            this.drawBlock(nx, ny)
+        }
+
+        return moved;
+    }
+
+    // position의 갱신은 해당 함수에서만 이루어진다.
+    drawBlock(x, y) {
+        this.position.x = x
+        this.position.y = y
+
+        this.setPreviewCoordinate()
+        this.drawPreview();
+        this.justDrawBlock();
+    }
+
+    // public
+    moveLeft() {
+        this.moveLeftOrRight(this.position.x - 1, this.position.y)
+    }
+
+    moveRight() {
+        this.moveLeftOrRight(this.position.x + 1, this.position.y)
+    }
+
+    checkRowsAndErase() {
+        checkRowsAndErase(
+            this.position.y,
+            Math.min(
+                GAME_SCREEN_HEIGHT_NUM - 1,
+                this.position.y + this.blockNum - 1
+            )
+        );
+    }
+
+    drawDown(nx = this.position.x, ny = this.position.y + 1) {
+        if (!this.move(nx, ny)) {
+            timer.startBottom();
+            timer.startBottomTemp();
+        } else {
+            timer.stopBottom();
+            timer.stopBottomTemp();
+        }
+    }
+
+    eraseBeforeBlock() {
+        this.erasePreview();
+        this.eraseBlock();
+    }
+
+    isBottom(x = this.position.x, y = this.position.y) {
         for (let i = 0; i < this.blockNum; i++) {
             for (let j = 0; j < this.blockNum; j++) {
                 const nx = x + i;
@@ -142,38 +188,36 @@ class Block {
         return false;
     }
 
+    // shape 갱신
     rotation() {
-        this.eraseBeforeBlock();
-        const length = this.shape.length;
-        const nextShape = [];
-        for (let i = 0; i < length; i++) nextShape[i] = [];
+        const nextShape = getRotateShape(this.shape);
 
-        for (let i = 0; i < length; i++)
-            for (let j = 0; j < length; j++)
-                nextShape[length - 1 - j][i] = this.shape[i][j];
+        const originPosition = this.position
+        let nx = this.position.x
+        let ny = this.position.y
 
-        var checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(
-            this.x,
-            this.y,
-            nextShape
-        );
+        let checkDuplicated = this.isDuplicatedBlockOrOutOfGameScreen(nx, ny, nextShape);
 
         let rotatable = true;
+
+        // 충돌한 곳이 있다면
         if (checkDuplicated != NONE_DUPLICATED) {
-            var moveIndex = 0;
+            rotatable = false;
+            // 왼쪽 면이 중복이거나 다른 블록가 중복이라면
             if (
                 checkDuplicated == LEFT_DUPLICATED ||
                 checkDuplicated == EITHER_DUPLICATED
             ) {
-                for (i = 1; i < this.blockNum; i++) {
+                for (let i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
-                            this.x + i,
-                            this.y,
+                            originPosition.x + i,
+                            originPosition.y,
                             nextShape
                         ) == NONE_DUPLICATED
                     ) {
-                        moveIndex = i;
+                        rotatable = true;
+                        nx = originPosition.x + i;
                         break;
                     }
                 }
@@ -185,27 +229,28 @@ class Block {
                 for (let i = 1; i < this.blockNum; i++) {
                     if (
                         this.isDuplicatedBlockOrOutOfGameScreen(
-                            this.x - i,
-                            this.y,
+                            originPosition.x - i,
+                            originPosition.y,
                             nextShape
                         ) == NONE_DUPLICATED
                     ) {
-                        moveIndex = -i;
+                        rotatable = true;
+                        nx = originPosition.x - i;
                         break;
                     }
                 }
             }
 
-            if (moveIndex == 0) { // x축을 움직여도 안되는경우 회전하지 않음
-                rotatable = false;
-            } else { // x축을 움직인다.
-                this.x += moveIndex;
-            }
+            // x축을 움직여도 안되는경우 회전하지 않음
         }
 
         if (rotatable) {
-            this.shape = nextShape.slice();
+            this.move(nx, ny, nextShape.slice());
         }
-        this.drawBlock(this.x, this.y);
     }
+
+    moveBottom() {
+        this.move(this.bottomPosition.x, this.bottomPosition.y)
+    }
+
 }
