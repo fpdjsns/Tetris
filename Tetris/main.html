@@ -2,53 +2,77 @@
 <html>
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="user-scalable=0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="user-scalable=0"/>
     <title>Tetris</title>
 </head>
 
 <body>
-    <canvas id="game" style="background-color:black;"></canvas>
-    <canvas id="nextBlock" style="position:absolute; left:220px; top:10px"></canvas>
-    <canvas id="keepBlock" style="position:absolute; left:220px; top:300px"></canvas>
-    <table class="arrow">
-        <tr>
-            <td></td>
-            <td></td>
-            <td>
-                <i class="fas fa-arrow-up"></i>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-                <i class="fas fa-arrow-circle-down"></i>
-            </td>
-            <td>
-                <i class="fas fa-arrow-left"></i>
-            </td>
-            <td>
-                <i class="fas fa-arrow-down"></i>
-            </td>
-            <td>
-                <i class="fas fa-arrow-right"></i>
-            </td>
-        </tr>
-    </table>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
-        crossorigin="anonymous">
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script type="text/javascript" src="js/constants.js"></script>
-    <script type="text/javascript" src="js/block.js"></script>
-    <script type="text/javascript" src="js/blockType.js"></script>
-    <script type="text/javascript" src="js/nextBlock.js"></script>
-    <script type="text/javascript" src="js/canvas.js"></script>
-    <script type="text/javascript" src="js/keyEvent.js"></script>
-    <script type="text/javascript" src="js/timer.js"></script>
-    <script type="text/javascript" src="js/gameAlgorithm.js"></script>
-    <script type="text/javascript" src="js/gameMain.js"></script>
- 
-    <link rel="stylesheet" type- "text/css" href="css/main.css"></link>
+<canvas id="game" style="background-color:black;"></canvas>
+<canvas id="nextBlock" style="position:absolute; left:220px; top:10px"></canvas>
+<canvas id="keepBlock" style="position:absolute; left:220px; top:300px"></canvas>
+<table class="arrow">
+    <tr>
+        <td></td>
+        <td></td>
+        <td>
+            <i class="fas fa-arrow-up"></i>
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <i class="fas fa-arrow-circle-down"></i>
+        </td>
+        <td>
+            <i class="fas fa-arrow-left"></i>
+        </td>
+        <td>
+            <i class="fas fa-arrow-down"></i>
+        </td>
+        <td>
+            <i class="fas fa-arrow-right"></i>
+        </td>
+    </tr>
+</table>
+<button class="btn_open_setting" onclick="openSetting()">설정</button>
+
+<div id="setting" class="layer_popup" hidden>
+    <div class="layer">
+        <div class="text_area">
+            <p>위 <input type="text" class="key_input" id="key-up" onkeydown="return false;"/></p>
+            <p>아래 <input type="text" class="key_input" id="key-down" onkeydown="return false;"/></p>
+            <p>왼쪽 <input type="text" class="key_input" id="key-left" onkeydown="return false;"/></p>
+            <p>오른쪽 <input type="text" class="key_input" id="key-right" onkeydown="return false;"/></p>
+            <p>최하단 <input type="text" class="key_input" id="key-below" onkeydown="return false;"/></p>
+            <p>블럭 저장 <input type="text" class="key_input" id="key-keep" onkeydown="return false;"/></p>
+        </div>
+        <div class="btn_area">
+            <button class="btn_ok" onclick="applySetting()">확인</button>
+            <button class="btn_cancel" onclick="closeSetting()">취소</button>
+        </div>
+    </div>
+    <div class="dimmed"></div>
+</div>
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+      integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+      crossorigin="anonymous">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript" src="js/constants.js"></script>
+<script type="text/javascript" src="js/block.js"></script>
+<script type="text/javascript" src="js/blockType.js"></script>
+<script type="text/javascript" src="js/nextBlock.js"></script>
+<script type="text/javascript" src="js/canvas.js"></script>
+<script type="text/javascript" src="js/keyEvent.js"></script>
+<script type="text/javascript" src="js/timer.js"></script>
+<script type="text/javascript" src="js/gameAlgorithm.js"></script>
+<script type="text/javascript" src="js/setting.js"></script>
+<script type="text/javascript" src="js/gameMain.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/main.css"></link>
+<link rel="stylesheet" type="text/css" href="css/setting.css"></link>
 </body>
 
 </html>

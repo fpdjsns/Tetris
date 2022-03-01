@@ -1,0 +1,77 @@
+@charset "utf-8";
+
+.layer_popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.layer {
+    width: 500px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 5px;
+    box-shadow: 0 0 10px -4px;
+}
+
+.text_area {
+    padding: 30px 30px 0;
+}
+
+.text_area > p {
+    font-size: 17px;
+    line-height: 1;
+    text-align: justify;
+}
+
+.btn_area {
+    padding: 30px;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn_area > button {
+    border: 1px solid;
+    padding: 13px 18px;
+    color: #fff;
+    font-size: 18px;
+    background-color: gray;
+    box-sizing: border-box;
+    display: table-cell;
+    width: 45%;
+    margin-right: 2.5%;
+    cursor: pointer;
+    box-shadow: 0px 0px 8px -5px #000;
+}
+
+.btn_area > .btn_ok {
+    width: 25%;
+    background-color: #058957;
+}
+
+.btn_area > .btn_cancel {
+    width: 25%;
+    background-color: #ff0000;
+    margin: 0;
+}
+
+.dimmed {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+}

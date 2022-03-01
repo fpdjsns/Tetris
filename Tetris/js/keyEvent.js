@@ -1,11 +1,11 @@
 // PC인 경우 상하좌우, 스페이스 keyCode
 const PC_BUTTON = {
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-    SPACEBAR: 32,
-    CTRL: 17
+    LEFT: 'ArrowLeft',
+    UP: 'ArrowUp',
+    RIGHT: 'ArrowRight',
+    DOWN: 'ArrowDown',
+    SPACEBAR: ' ',
+    CTRL: 'Control'
 }
 
 // MOBILE인 경우 상하좌우, 스페이스 keyCode
@@ -104,7 +104,7 @@ var spacebarKeyUp = function () {
 
 // TODO 함수나 변수 배열에 정리하면 switch 안쓰고 더 깔끔하게 할 수 있을 듯.
 $(document).keydown(function (e) {
-    switch (e.keyCode) {
+    switch (e.key) {
         case keyCode.LEFT:
             leftKeyDown();
             break;
@@ -129,7 +129,7 @@ $(document).keydown(function (e) {
 });
 
 $(document).keyup(function (e) {
-    switch (e.keyCode) {
+    switch (e.key) {
         case keyCode.LEFT:
             leftKeyUp();
             break;
