@@ -36,6 +36,7 @@ const BOTTOM_DUPLICATED = 4;
 
 const LINE_COLOR = "gray";
 
+const TIMER_UNIT = 1000; // 1sec
 const SPEED = 1000; // 1sec
 const BLOCK_BOTTOM_TIMEOUT = 2000; // 4sec
 const BLOCK_BOTTOM_TEMP_TIMEOUT = 500; // 0.5sec
